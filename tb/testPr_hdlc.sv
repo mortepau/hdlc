@@ -30,7 +30,7 @@ program testPr_hdlc(
    *                                                                          *
    ****************************************************************************/
   
-  logic[2:0] TXSC   = 3'b000, // Added by Morten 
+  logic[2:0] TXSC   = 3'b000,
              TXBUFF = 3'b001, 
              RXSC   = 3'b010, 
              RXBUFF = 3'b011, 
@@ -39,26 +39,38 @@ program testPr_hdlc(
   // VerifyAbortReceive should verify correct value in the Rx status/control
   // register, and that the Rx data buffer is zero after abort.
   task VerifyAbortReceive(logic [127:0][7:0] data, int Size);
-    logic [7:0] ReadData, ReadLen;
+    logic [7:0] ReadData;
 
-    // INSERT CODE HERE
+    // Assert that only Rx_AbortSignal is set
     ReadAddress(RXSC, ReadData);
-    assert (ReadData[3]) $display("PASS: Abort received");
-    else $display("FAIL: Abort not received");
+    assert (ReadData == 2'h08) $display("PASS: VerifyAbortReceive:: Abort received");
+    else $display("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
 
+    // Assert that Rx_Buff is 0
     ReadAddress(RXBUFF, ReadData);
-    assert (ReadData == 8'b0) $display("PASS: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
-    else $display("FAIL: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+    assert (ReadData == 8'b0) $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+    else $display("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 
   endtask
 
   // VerifyNormalReceive should verify correct value in the Rx status/control
   // register, and that the Rx data buffer contains correct data.
   task VerifyNormalReceive(logic [127:0][7:0] data, int Size);
-    logic [7:0] ReadData;
+    logic [7:0] ReadData, DataLen;
     wait(uin_hdlc.Rx_Ready);
 
-    // INSERT CODE HERE
+    // Assert that only Rx_Ready is set
+    ReadAddress(RXSC, ReadData);
+    assert (ReadData == 2'h01) $display("PASS: VerifyNormalReceive:: Data ready");
+    else $display("FAIL: VerifyNormalReceive:: Expected ReadData = 0x01, Received ReadData = 0x%h", ReadData);
+
+    // Assert content is valid
+    ReadAddress(RXLEN, DataLen);
+    for (int i = 0; i < DataLen; i++) begin
+      ReadAddress(RXBUFF, ReadData);
+      assert(ReadData == data[i]) else
+        $display("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+    end
   
   endtask
 
