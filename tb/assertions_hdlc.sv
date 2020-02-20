@@ -36,7 +36,7 @@ module assertions_hdlc (
    *******************************************/
 
   sequence Rx_flag;
-    // INSERT CODE HERE
+    $past(!Rx, 7) && $past(Rx, 6) && $past(Rx, 5) && $past(Rx, 4) && $past(Rx, 3) && $past(Rx, 2) && $past(Rx, 1) && !Rx; // Added by Morten
   endsequence
 
   // Check if flag sequence is detected
@@ -57,7 +57,7 @@ module assertions_hdlc (
 
   //If abort is detected during valid frame. then abort signal should go high
   property RX_AbortSignal;
-    // INSERT CODE HERE
+    @(posedge Clk) Rx_ValidFrame && Rx_AbortDetect |=> Rx_AbortSignal; // Added by Morten
   endproperty
 
   RX_AbortSignal_Assert : assert property (RX_AbortSignal) begin
