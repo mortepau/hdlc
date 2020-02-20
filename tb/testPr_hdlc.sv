@@ -29,13 +29,26 @@ program testPr_hdlc(
    *                               Student code                               *
    *                                                                          *
    ****************************************************************************/
+  
+  logic[2:0] TXSC   = 3'b000, // Added by Morten 
+             TXBUFF = 3'b001, 
+             RXSC   = 3'b010, 
+             RXBUFF = 3'b011, 
+             RXLEN  = 3'b100; 
 
   // VerifyAbortReceive should verify correct value in the Rx status/control
   // register, and that the Rx data buffer is zero after abort.
   task VerifyAbortReceive(logic [127:0][7:0] data, int Size);
-    logic [7:0] ReadData;
+    logic [7:0] ReadData, ReadLen;
 
     // INSERT CODE HERE
+    ReadAddress(RXSC, ReadData);
+    assert (ReadData[3]) $display("PASS: Abort received");
+    else $display("FAIL: Abort not received");
+
+    ReadAddress(RXBUFF, ReadData);
+    assert (ReadData == 8'b0) $display("PASS: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+    else $display("FAIL: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 
   endtask
 
@@ -213,7 +226,7 @@ program testPr_hdlc(
     ReceiveData[Size+1] = FCSBytes[15:8];
 
     //Enable FCS
-    if(!Overflow && !NonByteAligned)
+    if(!Overflow && !NonByteAligned) 
       WriteAddress(RXSC, 8'h20);
     else
       WriteAddress(RXSC, 8'h00);
