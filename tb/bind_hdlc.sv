@@ -46,7 +46,7 @@ module bind_hdlc ();
     .Tx_Done            ( uin_hdlc.Tx_Done            ),
 
     .Tx_ValidFrame      ( uin_hdlc.Tx_ValidFrame      ),
-    .Tx_AbortFrame      ( uin_hdlc.Tx_AbortFrame      ),
+    .Tx_AbortedTrans    ( uin_hdlc.Tx_AbortedTrans    ),
     .Tx_WriteFCS        ( uin_hdlc.Tx_WriteFCS        ),
     .Tx_InitZero        ( uin_hdlc.Tx_InitZero        ),
     .Tx_StartFCS        ( uin_hdlc.Tx_StartFCS        ),
