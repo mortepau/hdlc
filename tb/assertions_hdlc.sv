@@ -15,16 +15,58 @@
 */
 
 module assertions_hdlc (
-  output int   ErrCntAssertions,
-  input  logic Clk,
-  input  logic Rst,
-  input  logic Rx,
-  input  logic Rx_FlagDetect,
-  input  logic Rx_ValidFrame,
-  input  logic Rx_AbortDetect,
-  input  logic Rx_AbortSignal,
-  input  logic Rx_Overflow,
-  input  logic Rx_WrBuff
+  output int                ErrCntAssertions,
+  input  logic              Clk,
+  input  logic              Rst,
+  input  logic [2:0]        Address,
+  input  logic              WriteEnable,
+  input  logic              ReadEnable,
+  input  logic [7:0]        DataIn,
+  input  logic [7:0]        DataOut,
+  input  logic              Rx,
+  input  logic              RxEN,
+  input  logic              Rx_Ready,
+  input  logic              Rx_ValidFrame,
+  input  logic              Rx_WrBuff,
+  input  logic              Rx_EoF,
+  input  logic              Rx_AbortSignal,
+  input  logic              Rx_StartZeroDetect,
+  input  logic              Rx_FrameError,
+  input  logic              Rx_StartFCS,
+  input  logic              Rx_StopFCS,
+  input  logic [7:0]        Rx_Data,
+  input  logic              Rx_NewByte,
+  input  logic              Rx_FlagDetect,
+  input  logic              Rx_AbortDetect,
+  input  logic              RxD,
+  input  logic              Rx_FCSerr,
+  input  logic [7:0]        Rx_FrameSize,
+  input  logic              Rx_Overflow,
+  input  logic [7:0]        Rx_DataBuffOut,
+  input  logic              Rx_FCSen,
+  input  logic              Rx_RdBuff,
+  input  logic              Rx_Drop,
+  input  logic              Tx,
+  input  logic              TxEN,
+  input  logic              Tx_Done,
+  input  logic              Tx_ValidFrame,
+  input  logic              Tx_AbortedTrans,
+  input  logic              Tx_WriteFCS,
+  input  logic              Tx_InitZero,
+  input  logic              Tx_StartFCS,
+  input  logic              Tx_RdBuff,
+  input  logic              Tx_NewByte,
+  input  logic              Tx_FCSDone,
+  input  logic [7:0]        Tx_Data,
+  input  logic              Tx_Full,
+  input  logic              Tx_DataAvail,
+  input  logic [7:0]        Tx_FrameSize,
+  input  logic [127:0][7:0] Tx_DataArray,
+  input  logic [7:0]        Tx_DataOutBuff,
+  input  logic              Tx_WrBuff,
+  input  logic              Tx_Enable,
+  input  logic [7:0]        Tx_DataInBuff,
+  input  logic              Tx_AbortFrame
 );
 
   initial begin
@@ -114,7 +156,7 @@ module assertions_hdlc (
 
   // 3. Correct bits set in RX status/control register after receiving frame.
   property Rx_Status;
-    @(posedge clk) disable iff(Rst) $rose(Rx_EoF) |->
+    @(posedge Clk) disable iff(Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
         !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError;
       else if (Rx_AbortSignal)
@@ -127,7 +169,7 @@ module assertions_hdlc (
 
   // 5. Start and end of frame pattern generation.
   property Tx_FramePattern;
-    @(posedge clk) disable iff (Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
+    @(posedge Clk) disable iff (Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
   // Check if flag sequence is detected
