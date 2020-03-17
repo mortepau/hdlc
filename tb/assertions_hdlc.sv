@@ -154,8 +154,18 @@ module assertions_hdlc (
    *                Properties               *
    *******************************************/
 
+  // Check if flag sequence is detected
+  property p_Rx_FlagDetect;
+    @(posedge Clk) Rx_flag |-> ##2 Rx_FlagDetect;
+  endproperty
+
+  //If abort is detected during valid frame. then abort signal should go high
+  property p_Rx_AbortSignal;
+    @(posedge Clk) Rx_ValidFrame && Rx_AbortDetect |=> Rx_AbortSignal; // Added by Morten
+  endproperty
+
   // 3. Correct bits set in RX status/control register after receiving frame.
-  property Rx_Status;
+  property p_Rx_Status;
     @(posedge Clk) disable iff(Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
         !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
@@ -168,36 +178,40 @@ module assertions_hdlc (
   endproperty
 
   // 5. Start and end of frame pattern generation.
-  property Tx_FramePattern;
+  property p_Tx_FramePattern;
     @(posedge Clk) disable iff (Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
-  // Check if flag sequence is detected
-  property RX_FlagDetect;
-    @(posedge Clk) Rx_flag |-> ##2 Rx_FlagDetect;
-  endproperty
+  /********************************************
+   *                Assertions                *
+   ********************************************/
 
-  RX_FlagDetect_Assert : assert property (RX_FlagDetect) begin
+  Rx_FlagDetect_Assert : assert property (p_Rx_FlagDetect) begin
     $display("PASS: Flag detect");
   end else begin 
     $error("Flag sequence did not generate FlagDetect"); 
     ErrCntAssertions++; 
   end
 
-  /********************************************
-   *  Verify correct Rx_AbortSignal behavior  *
-   ********************************************/
-
-  //If abort is detected during valid frame. then abort signal should go high
-  property RX_AbortSignal;
-    @(posedge Clk) Rx_ValidFrame && Rx_AbortDetect |=> Rx_AbortSignal; // Added by Morten
-  endproperty
-
-  RX_AbortSignal_Assert : assert property (RX_AbortSignal) begin
+  RX_AbortSignal_Assert : assert property (p_Rx_AbortSignal) begin
     $display("PASS: Abort signal");
   end else begin 
     $error("AbortSignal did not go high after AbortDetect during validframe"); 
     ErrCntAssertions++; 
+  end
+
+  Rx_Status_Assert : assert property (p_Rx_Status) begin
+    $display("PASS: Status/Control Register correct");
+  end else begin
+      $error("Status/Control Register not set correctly");
+      ErrCntAssertions++;
+  end
+
+  Tx_FramePattern_Assert : assert property (p_Tx_FramePattern) begin
+    $display("PASS: Start/End frame detected");
+  end else begin
+    $display("Start/End frame not detected");
+    ErrCntAssertions++;
   end
 
 endmodule
