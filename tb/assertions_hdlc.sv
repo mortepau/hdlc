@@ -32,16 +32,16 @@ module assertions_hdlc (
   end
 
     /*
-    * 1.    Correct data in RX buffer according to RX input.
+    * 1I.    Correct data in RX buffer according to RX input.
     *       The buffer should contain up to 128 bytes (this
     *       includes the 2 FCS bytes, but not the flags).
-    * 2.    Attempting to read RX buffer after aborted frame,
+    * 2I.    Attempting to read RX buffer after aborted frame,
     *       frame error or dropped frame should result in zeros.
     * 3.    Correct bits set in RX status/control register after
     *       receiving frame. Remember to check all bits, i.e. after
     *       an aborted the Rx_Overflow bit should be 0, unless an
     *       overflow also occured.
-    * 4.    Correct TX output according to written TX buffer.
+    * 4IT.    Correct TX output according to written TX buffer.
     * 5.    Start and end of frame pattern generation (Start and 
     *       end flag: 0111_1110).
     * 6.    Zero insertion and removal of transparent transmission.
@@ -53,11 +53,11 @@ module assertions_hdlc (
     *       should be asserted.
     * 10.   Abort pattern detected during valid frame should generate
     *       Rx_AbortSignal.
-    * 11.   CRC generation and checking.
+    * 11I.   CRC generation and checking.
     * 12.   When a whole RX frame has been received, check if end of frame
     *       is generated.
     * 13.   When receiving more than 128 bytes, Rx_Overflow should be asserted.
-    * 14.   Rx_FrameSize should equal the number of bytes received in a frame
+    * 14I.   Rx_FrameSize should equal the number of bytes received in a frame
     *       (max 126 bytes = 128 bytes in buffer - 2 FCS byter).
     * 15.   Rx_Ready should indicate byte(s) in RX buffer is ready to  be read.
     * 16.   Non-byte aligned data or error in FCS checking should result
@@ -69,12 +69,66 @@ module assertions_hdlc (
     */
 
   /*******************************************
-   *  Verify correct Rx_FlagDetect behavior  *
+   *                Sequences                *
    *******************************************/
 
+  /***********************
+   *         Rx          *
+   ***********************/
+
+  sequence Rx_idle;
+    Rx [*8];
+  endsequence;
+
   sequence Rx_flag;
-    $past(!Rx, 7) && $past(Rx, 6) && $past(Rx, 5) && $past(Rx, 4) && $past(Rx, 3) && $past(Rx, 2) && $past(Rx, 1) && !Rx; // Added by Morten
+    !Rx ##1 Rx [*6] ##1 !Rx; 
   endsequence
+
+  sequence Rx_abort;
+    !Rx ##1 Rx [*7];
+  endsequence;
+
+  sequence Rx_zeroInsert;
+      Rx [*5] ##1 !Rx;
+  endsequence
+
+  /***********************
+   *         Tx          *
+   **********************/
+
+  sequence Tx_idle;
+    Tx [*8];
+  endsequence
+
+  sequence Tx_flag;
+    !Tx ##1 Tx [*6] ##1 !Tx;
+  endsequence
+
+  sequence Tx_abort;
+    !Tx ##1 Tx [*7];
+  endsequence
+
+  /*******************************************
+   *                Properties               *
+   *******************************************/
+
+  // 3. Correct bits set in RX status/control register after receiving frame.
+  property Rx_Status;
+    @(posedge clk) disable iff(Rst) $rose(Rx_EoF) |->
+      if (Rx_FrameError)
+        !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError;
+      else if (Rx_AbortSignal)
+         Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError;
+      else if (Rx_Overflow)
+         Rx_Ready &&  Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError;
+      else
+         Rx_Ready && !Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError;
+  endproperty
+
+  // 5. Start and end of frame pattern generation.
+  property Tx_FramePattern;
+    @(posedge clk) disable iff (Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
+  endproperty
 
   // Check if flag sequence is detected
   property RX_FlagDetect;
