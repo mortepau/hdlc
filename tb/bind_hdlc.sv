@@ -24,6 +24,7 @@ module bind_hdlc ();
 
     .Rx_ValidFrame      ( uin_hdlc.Rx_ValidFrame      ),
     .Rx_WrBuff          ( uin_hdlc.Rx_WrBuff          ),
+    .Rx_EoF             ( uin_hdlc.Rx_EoF             ),
     .Rx_AbortSignal     ( uin_hdlc.Rx_AbortSignal     ),
     .Rx_StartZeroDetect ( uin_hdlc.Rx_StartZeroDetect ),
     .Rx_FrameError      ( uin_hdlc.Rx_FrameError      ),
@@ -39,6 +40,7 @@ module bind_hdlc ();
     .Rx_Overflow        ( uin_hdlc.Rx_Overflow        ),
     .Rx_DataBuffOut     ( uin_hdlc.Rx_DataBuffOut     ),
     .Rx_FCSen           ( uin_hdlc.Rx_FCSen           ),
+    .Rx_RdBuff          ( uin_hdlc.Rx_RdBuff          ),
     .Rx_Drop            ( uin_hdlc.Rx_Drop            ),
 
     .Tx                 ( uin_hdlc.Tx                 ),
