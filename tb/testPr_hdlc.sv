@@ -277,7 +277,7 @@ program testPr_hdlc(
   // Covergroup
   covergroup hdlc_cg() @(posedge uin_hdlc.Clk);
     Address: coverpoint uin_hdlc.Address {
-      bins Address[] = {[0:7]}
+      bins Address[] = {[0:7]};
     }
     DataIn: coverpoint uin_hdlc.DataIn {
       bins DataIn[] = {[0:255]};
