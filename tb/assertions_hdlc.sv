@@ -158,13 +158,13 @@ module assertions_hdlc (
   property Rx_Status;
     @(posedge Clk) disable iff(Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
-        !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError;
+        !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
       else if (Rx_AbortSignal)
-         Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError;
+         Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError
       else if (Rx_Overflow)
-         Rx_Ready &&  Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError;
+         Rx_Ready &&  Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError
       else
-         Rx_Ready && !Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError;
+         Rx_Ready && !Rx_Overflow && !Rx_AbortSignal && !Rx_FrameError
   endproperty
 
   // 5. Start and end of frame pattern generation.
