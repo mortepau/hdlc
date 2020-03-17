@@ -480,7 +480,7 @@ program testPr_hdlc(
       VerifyOverflowReceive(ReceiveData, Size);
     else if(Drop)
       VerifyDropReceive(ReceiveData, Size);
-    else if(FCSErr)
+    else if(FCSerr)
       VerifyFCSErrReceive(ReceiveData, Size);
     else if(NonByteAligned)
       VerifyNonByteAlignedReceive(ReceiveData, Size);
