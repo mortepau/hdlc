@@ -166,7 +166,7 @@ module assertions_hdlc (
 
   // 3. Correct bits set in RX status/control register after receiving frame.
   property p_Rx_Status;
-    @(posedge Clk) disable iff(Rst) $rose(Rx_EoF) |->
+    @(posedge Clk) disable iff(!Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
         !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
       else if (Rx_AbortSignal)
@@ -179,7 +179,7 @@ module assertions_hdlc (
 
   // 5. Start and end of frame pattern generation.
   property p_Tx_FramePattern;
-    @(posedge Clk) disable iff (Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
+    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
   /********************************************
