@@ -98,9 +98,9 @@ module assertions_hdlc (
   endsequence
 
   sequence Rx_DataZero;
-      (Rx_Data, 8 ==? 8'bxx111110) or
-      (Rx_Data, 8 ==? 8'bx111110x) or
-      (Rx_Data, 8 ==? 8'b111110xx) or
+      (Rx_Data ==? 8'bxx111110) or
+      (Rx_Data ==? 8'bx111110x) or
+      (Rx_Data ==? 8'b111110xx) or
       (($past(Rx_Data, 8) ==? 8'b11110xxx) && (Rx_Data ==? 8'bxxxxxxx1)) or
       (($past(Rx_Data, 8) ==? 8'b1110xxxx) && (Rx_Data ==? 8'bxxxxxx11)) or
       (($past(Rx_Data, 8) ==? 8'b110xxxxx) && (Rx_Data ==? 8'bxxxxx111)) or
@@ -153,14 +153,12 @@ module assertions_hdlc (
   endproperty
 
   // 6. Zero insertion and removal of transparent transmission.
-  // 8 cycles after Rx_zeroPattern, RxChannel.ZeroDetect is asserted
-  // Rx is inserted into TempRegister after 8 cycles and RxData <= TempRegister when NewByte is asserted
   property p_Tx_InsertZero;
     @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
   endproperty
 
   property p_Rx_RemoveZero;
-    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |-> ##[8:15] Rx_NewByte ##1 Rx_DataZero;
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero;
   endproperty
 
   // 7. Idle pattern generation and checking
@@ -174,7 +172,7 @@ module assertions_hdlc (
 
   // 8. Abort pattern generation and checking.
   property p_Rx_AbortPattern;
-    @(posedge Clk) disable iff (!Rst) Rx_abort |-> ##2 $rose(Rx_AbortDetect);
+    @(posedge Clk) disable iff (!Rst) Rx_abort and (!Rx_ValidFrame [*7]) |-> ##2 $rose(Rx_AbortDetect);
   endproperty
 
   property p_Tx_AbortPattern;
