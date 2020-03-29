@@ -233,7 +233,7 @@ module assertions_hdlc (
   Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
     $display("PASS: Zero removal successful");
   end else begin
-    $error("Zero removal not detected");
+    $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data);
     ErrCntAssertions++;
   end
 
