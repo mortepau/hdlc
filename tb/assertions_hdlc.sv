@@ -128,12 +128,6 @@ module assertions_hdlc (
    *                Properties               *
    *******************************************/
 
-  // Check if flag sequence is detected
-  property p_Rx_FlagDetect;
-    @(posedge Clk) Rx_flag |-> ##2 Rx_FlagDetect;
-  endproperty
-
-
   // 3. Correct bits set in RX status/control register after receiving frame.
   property p_Rx_Status;
     @(posedge Clk) disable iff(!Rst) $rose(Rx_EoF) |->
@@ -153,6 +147,10 @@ module assertions_hdlc (
     @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
+  property p_Rx_FramePattern;
+    @(posedge Clk) Rx_flag |-> ##2 Rx_FlagDetect;
+  endproperty
+
   // 6. Zero insertion and removal of transparent transmission.
   // Not working
   property p_Tx_InsertZero;
@@ -169,17 +167,19 @@ module assertions_hdlc (
     @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_idle;
   endproperty
 
+  // Not working
   property p_Rx_IdlePattern;
-      @(posedge Clk) disable iff (!Rst) !Rx_ValidFrame |-> Rx_idle; 
+      @(posedge Clk) disable iff (!Rst) !Rx_ValidFrame [*8] |-> Rx_idle; 
   endproperty
 
   // 8. Abort pattern generation and checking.
-  property p_Rx_AbortPattern;
-    @(posedge Clk) disable iff (!Rst) Rx_abort and (!Rx_ValidFrame [*7]) |-> ##2 $rose(Rx_AbortDetect);
-  endproperty
-
+  // Not checked
   property p_Tx_AbortPattern;
     @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##3 Tx_abort;
+  endproperty
+
+  property p_Rx_AbortPattern;
+    @(posedge Clk) disable iff (!Rst) Rx_abort and (!Rx_ValidFrame [*7]) |-> ##2 $rose(Rx_AbortDetect);
   endproperty
 
   // 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
@@ -217,20 +217,6 @@ module assertions_hdlc (
    *                Assertions                *
    ********************************************/
 
-  Rx_FlagDetect_Assert : assert property (p_Rx_FlagDetect) begin
-    $display("PASS: Flag detect");
-  end else begin 
-    $error("Flag sequence did not generate FlagDetect"); 
-    ErrCntAssertions++; 
-  end
-
-  RX_AbortSignal_Assert : assert property (p_Rx_AbortSignal) begin
-    $display("PASS: Abort signal");
-  end else begin 
-    $error("AbortSignal did not go high after AbortDetect during validframe"); 
-    ErrCntAssertions++; 
-  end
-
   Rx_Status_Assert : assert property (p_Rx_Status) begin
     $display("PASS: Status/Control Register correct");
   end else begin
@@ -239,10 +225,17 @@ module assertions_hdlc (
   end
 
   Tx_FramePattern_Assert : assert property (p_Tx_FramePattern) begin
-    $display("PASS: Start/End frame detected");
+    $display("PASS: Flag detected on transmission side");
   end else begin
-    $display("Start/End frame not detected");
+    $display("FAIL: Flag not detected on transmission side");
     ErrCntAssertions++;
+  end
+
+  Rx_FramePattern_Assert : assert property (p_Rx_FramePattern) begin
+    $display("PASS: Flag detected on receive side");
+  end else begin 
+    $error("FAIL: Flag no detected on receive side"); 
+    ErrCntAssertions++; 
   end
 
   /* Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin */
@@ -264,10 +257,10 @@ module assertions_hdlc (
     ErrCntAssertions++;
   end
 
-  /* Rx_IdlePattern_Assert : assert property (p_Rx_IdlePattern) else begin */
-  /*   $error("Idle pattern not detected on receiving side"); */
-  /*   ErrCntAssertions++; */
-  /* end */
+  Rx_IdlePattern_Assert : assert property (p_Rx_IdlePattern) else begin
+    $error("Idle pattern not detected on receiving side");
+    ErrCntAssertions++;
+  end
 
   Tx_AbortPattern_Assert : assert property (p_Tx_AbortPattern) begin
     $display("PASS: Abort pattern generated");
@@ -281,6 +274,13 @@ module assertions_hdlc (
   end else begin
     $error("FAIL: Abort pattern not received");
     ErrCntAssertions++;
+  end
+
+  Rx_AbortSignal_Assert : assert property (p_Rx_AbortSignal) begin
+    $display("PASS: Abort signal");
+  end else begin 
+    $error("FAIL: AbortSignal did not go high after AbortDetect during validframe"); 
+    ErrCntAssertions++; 
   end
 
   Rx_EoF_Assert : assert property (p_Rx_EndOfFrame) begin
