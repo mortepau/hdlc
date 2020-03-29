@@ -189,7 +189,7 @@ module assertions_hdlc (
   endproperty
 
   property p_Rx_RemoveZero;
-    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data[4:0] == 5'b11111 or Rx_Data[5:1] == 5'b11111 or Rx_Data[6:2] == 5'b11111 or Rx_Data[7:3] ==? 5'b11111)
   endproperty
 
   /********************************************
