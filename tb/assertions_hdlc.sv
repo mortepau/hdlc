@@ -94,7 +94,7 @@ module assertions_hdlc (
   endsequence
 
   sequence Rx_abort_past;
-      $past(Rx, 1) && $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(Rx, 7) && $past(!Rx, 8);
+      $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(Rx, 7) && $past(Rx, 8) && $past(!Rx, 9);
   endsequence
 
   sequence Rx_zeroInsert;
