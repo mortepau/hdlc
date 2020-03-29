@@ -183,10 +183,9 @@ module assertions_hdlc (
   endproperty
 
   // 6. Zero insertion and removal of transparent transmission.
-  property p_Tx_InsertZero;
-    0 |-> 1;
-    /* @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx) */
-  endproperty
+  /* property p_Tx_InsertZero; */
+  /*   @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx) */
+  /* endproperty */
 
   property p_Rx_RemoveZero;
     @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data[4:0] == 5'b11111 or Rx_Data[5:1] == 5'b11111 or Rx_Data[6:2] == 5'b11111 or Rx_Data[7:3] ==? 5'b11111)
@@ -224,12 +223,12 @@ module assertions_hdlc (
     ErrCntAssertions++;
   end
 
-  Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin
-    $display("PASS: Zero insertion successful");
-  end else begin
-    $error("Zero insertion not detected");
-    ErrCntAssertions++;
-  end
+  /* Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin */
+  /*   $display("PASS: Zero insertion successful"); */
+  /* end else begin */
+  /*   $error("Zero insertion not detected"); */
+  /*   ErrCntAssertions++; */
+  /* end */
 
   Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
     $display("PASS: Zero removal successful");
