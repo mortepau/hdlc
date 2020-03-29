@@ -247,12 +247,12 @@ module assertions_hdlc (
   /*   ErrCntAssertions++; */
   /* end */
 
-  /* Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin */
-  /*   $display("PASS: Zero removal successful"); */
-  /* end else begin */
-  /*   $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data); */
-  /*   ErrCntAssertions++; */
-  /* end */
+  Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
+    $display("PASS: Zero removal successful");
+  end else begin
+    $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data);
+    ErrCntAssertions++;
+  end
 
   Tx_IdlePattern_Assert : assert property (p_Tx_IdlePattern) else begin
     $error("Idle pattern not detected on transmitting side");
