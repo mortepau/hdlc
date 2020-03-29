@@ -93,12 +93,19 @@ module assertions_hdlc (
     !Rx ##1 Rx [*7];
   endsequence
 
-  sequence Rx_abort_past;
-      $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(Rx, 7) && $past(Rx, 8) && $past(!Rx, 9);
-  endsequence
-
   sequence Rx_zeroInsert;
       $rose(Rx) ##1 Rx [*4] ##1 !Rx;
+  endsequence
+
+  sequence Rx_DataZero;
+      (Rx_Data ==? 8'bxx111110) or
+      (Rx_Data ==? 8'bx111110x) or
+      (Rx_Data ==? 8'b111110xx) or
+      (Rx_Data ==? 8'b11110xxx ##8 Rx_Data ==? 8'bxxxxxxx1) or
+      (Rx_Data ==? 8'b1110xxxx ##8 Rx_Data ==? 8'bxxxxxx11) or
+      (Rx_Data ==? 8'b110xxxxx ##8 Rx_Data ==? 8'bxxxxx111) or
+      (Rx_Data ==? 8'b10xxxxxx ##8 Rx_Data ==? 8'bxxxx1111) or
+      (Rx_Data ==? 8'b0xxxxxxx ##8 Rx_Data ==? 8'bxxx11111);
   endsequence
 
   /***********************
@@ -146,12 +153,14 @@ module assertions_hdlc (
   endproperty
 
   // 6. Zero insertion and removal of transparent transmission.
+  // 8 cycles after Rx_zeroPattern, RxChannel.ZeroDetect is asserted
+  // Rx is inserted into TempRegister after 8 cycles and RxData <= TempRegister when NewByte is asserted
   property p_Tx_InsertZero;
     @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
   endproperty
 
   property p_Rx_RemoveZero;
-    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data[4:0] ==? 5'b11111 or Rx_Data[5:1] ==? 5'b11111 or Rx_Data[6:2] ==? 5'b11111 or Rx_Data[7:3] ==? 5'b11111)
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[8:16] Rx_NewByte ##1 Rx_DataZero;
   endproperty
 
   // 7. Idle pattern generation and checking
@@ -165,7 +174,7 @@ module assertions_hdlc (
 
   // 8. Abort pattern generation and checking.
   property p_Rx_AbortPattern;
-    @(posedge Clk) disable iff (!Rst) $rose(Rx_AbortDetect) |-> Rx_abort_past;
+    @(posedge Clk) disable iff (!Rst) Rx_abort |-> ##2 $rose(Rx_AbortDetect);
   endproperty
 
   property p_Tx_AbortPattern;
