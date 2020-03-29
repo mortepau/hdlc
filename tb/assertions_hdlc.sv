@@ -160,7 +160,13 @@ module assertions_hdlc (
   endproperty
 
   // 8. Abort pattern generation and checking.
-  
+  property p_Rx_AbortPattern;
+    @(posedge Clk) disable iff (!Rst) Rx_abort |-> ##2 $rose(Rx_AbortDetect);
+  endproperty
+
+  property p_Tx_AbortPattern;
+    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##3 Tx_abort;
+  endproperty
 
   // 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
 
@@ -241,5 +247,19 @@ module assertions_hdlc (
   /*   $error("Idle pattern not detected on receiving side"); */
   /*   ErrCntAssertions++; */
   /* end */
+
+  Tx_AbortPattern_Assert : assert property (p_Tx_AbortPattern) begin
+    $display("PASS: Abort pattern generated");
+  end else begin
+    $error("FAIL: Abort pattern not generated");
+    ErrCntAssertions++;
+  end
+
+  Rx_AbortPattern_Assert : assert property (p_Rx_AbortPattern) begin
+    $display("PASS: Abort pattern received");
+  end else begin
+    $error("FAIL: Abort pattern not received");
+    ErrCntAssertions++;
+  end
 
 endmodule
