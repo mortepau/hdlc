@@ -182,6 +182,15 @@ module assertions_hdlc (
     @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
+  // 6. Zero insertion and removal of transparent transmission.
+  property p_Tx_InsertZero;
+    Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
+  endproperty
+
+  property p_Rx_RemoveZero;
+    Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
+  endproperty
+
   /********************************************
    *                Assertions                *
    ********************************************/
@@ -211,6 +220,20 @@ module assertions_hdlc (
     $display("PASS: Start/End frame detected");
   end else begin
     $display("Start/End frame not detected");
+    ErrCntAssertions++;
+  end
+
+  Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin
+    $display("PASS: Zero insertion successful");
+  end else begin
+    $error("Zero insertion not detected");
+    ErrCntAssertions++;
+  end
+
+  Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
+    $display("PASS: Zero removal successful");
+  end else begin
+    $error("Zero removal not detected");
     ErrCntAssertions++;
   end
 
