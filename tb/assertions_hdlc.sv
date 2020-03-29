@@ -91,7 +91,11 @@ module assertions_hdlc (
 
   sequence Rx_abort;
     !Rx ##1 Rx [*7];
-  endsequence;
+  endsequence
+
+  sequence Rx_abort_past;
+    Rx && $past(Rx, 1) && $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(!Rx, 7)
+  endsequence
 
   sequence Rx_zeroInsert;
       $rose(Rx) ##1 Rx [*4] ##1 !Rx;
@@ -161,7 +165,7 @@ module assertions_hdlc (
 
   // 8. Abort pattern generation and checking.
   property p_Rx_AbortPattern;
-    @(posedge Clk) disable iff (!Rst) Rx_abort |-> ##2 $rose(Rx_AbortDetect);
+    @(posedge Clk) disable iff (!Rst) $rose(Rx_AbortDetect) |-> Rx_abort_past;
   endproperty
 
   property p_Tx_AbortPattern;
@@ -169,6 +173,9 @@ module assertions_hdlc (
   endproperty
 
   // 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
+  property p_Tx_AbortSignal;
+    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) && Tx_DataAvail |-> Tx_AbortedTrans;
+  endproperty
 
   // 10. Abort pattern detected during valid frame should generate Rx_AbortSignal
   property p_Rx_AbortSignal;
