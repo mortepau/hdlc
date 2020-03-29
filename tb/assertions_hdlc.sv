@@ -183,12 +183,21 @@ module assertions_hdlc (
   endproperty
 
   // 6. Zero insertion and removal of transparent transmission.
-  /* property p_Tx_InsertZero; */
-  /*   @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx) */
-  /* endproperty */
+  property p_Tx_InsertZero;
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
+  endproperty
 
   property p_Rx_RemoveZero;
-    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data[4:0] == 5'b11111 or Rx_Data[5:1] == 5'b11111 or Rx_Data[6:2] == 5'b11111 or Rx_Data[7:3] ==? 5'b11111)
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] (Rx_Data[4:0] ==? 5'b11111 or Rx_Data[5:1] ==? 5'b11111 or Rx_Data[6:2] ==? 5'b11111 or Rx_Data[7:3] ==? 5'b11111)
+  endproperty
+
+  // 7. Idle pattern generation and checking
+  property p_Tx_IdlePattern;
+    @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_Idle;
+  endproperty
+
+  property p_Rx_IdlePattern;
+      @(posedge Clk) disable iff (!Rst) !Rx_ValidFrame |-> Rx_idle; 
   endproperty
 
   /********************************************
@@ -230,10 +239,24 @@ module assertions_hdlc (
   /*   ErrCntAssertions++; */
   /* end */
 
-  Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
-    $display("PASS: Zero removal successful");
+  /* Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin */
+  /*   $display("PASS: Zero removal successful"); */
+  /* end else begin */
+  /*   $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data); */
+  /*   ErrCntAssertions++; */
+  /* end */
+
+  Tx_IdlePattern_Assert : assert property (p_Tx_IdlePattern) begin
+    $display("PASS: Idle pattern detected on transmitting side");
   end else begin
-    $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data);
+    $error("Idle pattern not detected on transmitting side");
+    ErrCntAssertions++;
+  end
+
+  Rx_IdlePattern_Assert : assert property (p_Rx_IdlePattern) begin
+    $display("PASS: Idle pattern detected on receiving side");
+  end else begin
+    $error("Idle pattern not detected on receiving side");
     ErrCntAssertions++;
   end
 
