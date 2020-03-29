@@ -148,11 +148,13 @@ module assertions_hdlc (
   endproperty
 
   // 5. Start and end of frame pattern generation.
+  // Not checked
   property p_Tx_FramePattern;
     @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
   endproperty
 
   // 6. Zero insertion and removal of transparent transmission.
+  // Not working
   property p_Tx_InsertZero;
     @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
   endproperty
@@ -162,6 +164,7 @@ module assertions_hdlc (
   endproperty
 
   // 7. Idle pattern generation and checking
+  // Not checked
   property p_Tx_IdlePattern;
     @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_idle;
   endproperty
@@ -180,6 +183,7 @@ module assertions_hdlc (
   endproperty
 
   // 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
+  // Not checked
   property p_Tx_AbortSignal;
     @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) && Tx_DataAvail |-> Tx_AbortedTrans;
   endproperty
@@ -190,6 +194,9 @@ module assertions_hdlc (
   endproperty
 
   // 12. When a whole RX frame has been received, check if end of frame is generated
+  property p_Rx_EndOfFrame;
+    @(posedge Clk) disable iff(!Rst) $fell(Rx_ValidFrame) |=> $rose(Rx_EoF);
+  endproperty
 
 
   // 13. When receiving more than 128 bytes, Rx_Overflow should be asserted
@@ -273,6 +280,13 @@ module assertions_hdlc (
     $display("PASS: Abort pattern received");
   end else begin
     $error("FAIL: Abort pattern not received");
+    ErrCntAssertions++;
+  end
+
+  Rx_EoF_Assert : assert property (p_Rx_EndOfFrame) begin
+    $display("PASS: Rx_EoF asserted");
+  end else begin
+    $error("FAIL: Rx_EoF not asserted");
     ErrCntAssertions++;
   end
 
