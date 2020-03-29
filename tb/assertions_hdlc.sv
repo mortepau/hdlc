@@ -98,14 +98,14 @@ module assertions_hdlc (
   endsequence
 
   sequence Rx_DataZero;
-      (Rx_Data ==? 8'bxx111110) or
-      (Rx_Data ==? 8'bx111110x) or
-      (Rx_Data ==? 8'b111110xx) or
-      (Rx_Data ==? 8'b11110xxx ##8 Rx_Data ==? 8'bxxxxxxx1) or
-      (Rx_Data ==? 8'b1110xxxx ##8 Rx_Data ==? 8'bxxxxxx11) or
-      (Rx_Data ==? 8'b110xxxxx ##8 Rx_Data ==? 8'bxxxxx111) or
-      (Rx_Data ==? 8'b10xxxxxx ##8 Rx_Data ==? 8'bxxxx1111) or
-      (Rx_Data ==? 8'b0xxxxxxx ##8 Rx_Data ==? 8'bxxx11111);
+      ($past(Rx_Data, 8) ==? 8'bxx111110) or
+      ($past(Rx_Data, 8) ==? 8'bx111110x) or
+      ($past(Rx_Data, 8) ==? 8'b111110xx) or
+      ($past(Rx_Data, 8) ==? 8'b11110xxx && Rx_Data ==? 8'bxxxxxxx1) or
+      ($past(Rx_Data, 8) ==? 8'b1110xxxx && Rx_Data ==? 8'bxxxxxx11) or
+      ($past(Rx_Data, 8) ==? 8'b110xxxxx && Rx_Data ==? 8'bxxxxx111) or
+      ($past(Rx_Data, 8) ==? 8'b10xxxxxx && Rx_Data ==? 8'bxxxx1111) or
+      ($past(Rx_Data, 8) ==? 8'b0xxxxxxx && Rx_Data ==? 8'bxxx11111);
   endsequence
 
   /***********************
@@ -248,9 +248,9 @@ module assertions_hdlc (
   /* end */
 
   Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
-    $display("PASS: Zero removal successful");
+    $display("PASS: Zero removal successful - Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
   end else begin
-    $error("Zero removal not detected, Rx_Data=0x%h", Rx_Data);
+    $error("Zero removal not detected, Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
     ErrCntAssertions++;
   end
 
