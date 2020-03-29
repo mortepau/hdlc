@@ -131,7 +131,7 @@ module assertions_hdlc (
   endsequence;
 
   sequence Rx_zeroInsert;
-      Rx [*5] ##1 !Rx;
+      $rose(Rx) ##1 Rx [*4] ##1 !Rx;
   endsequence
 
   /***********************
