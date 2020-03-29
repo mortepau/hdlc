@@ -98,14 +98,14 @@ module assertions_hdlc (
   endsequence
 
   sequence Rx_DataZero;
-      ($past(Rx_Data, 8) ==? 8'bxx111110) or
-      ($past(Rx_Data, 8) ==? 8'bx111110x) or
-      ($past(Rx_Data, 8) ==? 8'b111110xx) or
-      ($past(Rx_Data, 8) ==? 8'b11110xxx && Rx_Data ==? 8'bxxxxxxx1) or
-      ($past(Rx_Data, 8) ==? 8'b1110xxxx && Rx_Data ==? 8'bxxxxxx11) or
-      ($past(Rx_Data, 8) ==? 8'b110xxxxx && Rx_Data ==? 8'bxxxxx111) or
-      ($past(Rx_Data, 8) ==? 8'b10xxxxxx && Rx_Data ==? 8'bxxxx1111) or
-      ($past(Rx_Data, 8) ==? 8'b0xxxxxxx && Rx_Data ==? 8'bxxx11111);
+      (Rx_Data, 8 ==? 8'bxx111110) or
+      (Rx_Data, 8 ==? 8'bx111110x) or
+      (Rx_Data, 8 ==? 8'b111110xx) or
+      (($past(Rx_Data, 8) ==? 8'b11110xxx) && (Rx_Data ==? 8'bxxxxxxx1)) or
+      (($past(Rx_Data, 8) ==? 8'b1110xxxx) && (Rx_Data ==? 8'bxxxxxx11)) or
+      (($past(Rx_Data, 8) ==? 8'b110xxxxx) && (Rx_Data ==? 8'bxxxxx111)) or
+      (($past(Rx_Data, 8) ==? 8'b10xxxxxx) && (Rx_Data ==? 8'bxxxx1111)) or
+      (($past(Rx_Data, 8) ==? 8'b0xxxxxxx) && (Rx_Data ==? 8'bxxx11111));
   endsequence
 
   /***********************
@@ -160,7 +160,7 @@ module assertions_hdlc (
   endproperty
 
   property p_Rx_RemoveZero;
-    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |-> ##[8:16] Rx_NewByte ##1 Rx_DataZero;
+    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |-> ##[8:15] Rx_NewByte ##1 Rx_DataZero;
   endproperty
 
   // 7. Idle pattern generation and checking
