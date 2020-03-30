@@ -133,7 +133,7 @@ module assertions_hdlc (
     @(posedge Clk) disable iff(!Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
         !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
-      if (Rx_AbortSignal && Rx_Overflow)
+      else if (Rx_AbortSignal && Rx_Overflow)
          Rx_Ready &&  Rx_Overflow &&  Rx_AbortSignal &&  Rx_FrameError
       else if (Rx_AbortSignal)
          Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError
