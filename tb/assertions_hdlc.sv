@@ -171,7 +171,7 @@ module assertions_hdlc (
 
 	  // Not working
 	  property p_Rx_IdlePattern;
-		    @(posedge Clk) disable iff (!Rst) !Rx_ValidFrame [*8] |-> Rx_idle; 
+        @(posedge Clk) disable iff (!Rst) (!Rx_flag and !Rx_ValidFrame [*8]) |-> ($past(Rx, 0) && $past(Rx, 1) && $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(Rx, 7));
 	  endproperty
 
 	  // 8. Abort pattern generation and checking.
@@ -299,7 +299,7 @@ module assertions_hdlc (
     Rx_Overflow_Assert : assert property (p_Rx_Overflow) begin
         $display("PASS: Rx_Overflow is high after receiving more than 128 bytes");
     end else begin
-        $error("FAIL. Rx_Overflow not asserted after receiving more than 128 bytes");
+        $error("FAIL: Rx_Overflow not asserted after receiving more than 128 bytes");
         ErrCntAssertions++;
     end
 
