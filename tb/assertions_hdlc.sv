@@ -171,7 +171,7 @@ module assertions_hdlc (
 
 	  // Not working
 	  property p_Rx_IdlePattern;
-        @(posedge Clk) disable iff (!Rst) (!Rx_flag and !Rx_ValidFrame [*8]) |-> ($past(Rx, 0) && $past(Rx, 1) && $past(Rx, 2) && $past(Rx, 3) && $past(Rx, 4) && $past(Rx, 5) && $past(Rx, 6) && $past(Rx, 7));
+        @(posedge Clk) disable iff (!Rst) (!Rx_flag and !Rx_ValidFrame [*8]) |-> (Rx and $past(Rx, 1) and $past(Rx, 2) and $past(Rx, 3) and $past(Rx, 4) and $past(Rx, 5) and $past(Rx, 6) and $past(Rx, 7));
 	  endproperty
 
 	  // 8. Abort pattern generation and checking.
