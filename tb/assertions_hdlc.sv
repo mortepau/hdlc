@@ -204,22 +204,31 @@ module assertions_hdlc (
 		    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame)  $rose(Rx_ValidFrame) ##0 ($rose(Rx_NewByte) [->129]) |=> $rose(Rx_Overflow)
 	  endproperty
 
+    // 14. Rx_FrameSize should equal the number of bytes received in a frame.
+    property p_Rx_FrameSize;
+        unsigned int bytes = 0;
+        @(posedge Clk) disable iff (!Rst) $rose(Rx_ValidFrame) ##0 (($rose(Rx_NewByte) [->1], bytes++) [->1:127]) ##5 $rose(Rx_EoF) |=> Rx_FrameSize == (bytes - 2); 
+    endproperty
+
 	  // 15. Rx_Ready should indicate byte(s) in RX Buffer is ready to be read
 	  property p_Rx_Ready;
 		    @(posedge Clk) disable iff (!Rst) $rose(Rx_Ready) |-> $rose(Rx_EoF) and !Rx_ValidFrame;
 	  endproperty
 
 	  // 16. Non-byte aligned data or errors in FCS checking should result in frame error
+    // Not checked
     property p_FCSerr;
         @(posedge Clk) disable iff (!Rst) $rose(Rx_FCSerr) && Rx_FCSen |=> $rose(Rx_FrameError);
     endproperty
 
 	  // 17. Tx_Done should be asserted when entire TX buffer has been read for transmission
+    // Not checked
     property p_Tx_Done;
         @(posedge Clk) disable iff (!Rst) $fell(Tx_DataAvail) |=> $rose(Tx_Done);
     endproperty
 
 	  // 18. Tx_Full should be asserted after writing 126 or more bytes to the TX buffer (overflow)
+    // Not checked
     property p_Tx_Full;
         @(posedge Clk) disable iff (!Rst) Tx_FrameSize==8'd126 |=> $rose(Tx_Full);
     endproperty
