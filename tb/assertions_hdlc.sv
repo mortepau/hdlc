@@ -215,10 +215,14 @@ module assertions_hdlc (
     endproperty
 
 	  // 17. Tx_Done should be asserted when entire TX buffer has been read for transmission
-
+    property p_Tx_Done;
+        @(posedge Clk) disable iff (!Rst) $fell(Tx_DataAvail) |=> $rose(Tx_Done);
+    endproperty
 
 	  // 18. Tx_Full should be asserted after writing 126 or more bytes to the TX buffer (overflow)
-    
+    property p_Tx_Full;
+        @(posedge Clk) disable iff (!Rst) Tx_FrameSize==8'd126 |=> $rose(Tx_Full);
+    endproperty
 
 	  /********************************************
 	  *                Assertions                *
@@ -315,6 +319,20 @@ module assertions_hdlc (
         $display("PASS: Frame error detected");
     end else begin
         $error("FAIL: Frame error not detected");
+        ErrCntAssertions++;
+    end
+
+    Tx_Done_Assert : assert property (p_Tx_Done) begin
+        $display("PASS: Tx_Done asserted");
+    end else begin
+        $error("FAIL: Tx_Done did not become asserted");
+        ErrCntAssertions++;
+    end
+
+    Tx_Full_Assert : assert property (p_Tx_Full) begin
+        $display("PASS: Tx_Full asserted");
+    end else begin
+        $error("FAIL: Tx_Full did not become asserted");
         ErrCntAssertions++;
     end
 
