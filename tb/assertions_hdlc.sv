@@ -133,6 +133,8 @@ module assertions_hdlc (
     @(posedge Clk) disable iff(!Rst) $rose(Rx_EoF) |->
       if (Rx_FrameError)
         !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
+      if (Rx_AbortSignal && Rx_Overflow)
+         Rx_Ready &&  Rx_Overflow &&  Rx_AbortSignal &&  Rx_FrameError
       else if (Rx_AbortSignal)
          Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError
       else if (Rx_Overflow)
@@ -203,6 +205,9 @@ module assertions_hdlc (
 
 
   // 15. Rx_Ready should indicate byte(s) in RX Buffer is ready to be read
+  property p_Rx_Ready;
+    @(posedge Clk) disable if (!Rst) $rose(Rx_Ready) |-> $rose(Rx_EoF) and !Rx_ValidFrame;
+  endproperty
   
 
   // 16. Non-byte aligned data or errors in FCS checking should result in frame error
@@ -287,6 +292,13 @@ module assertions_hdlc (
     $display("PASS: Rx_EoF asserted");
   end else begin
     $error("FAIL: Rx_EoF not asserted");
+    ErrCntAssertions++;
+  end
+
+  Rx_Ready_Assert : assert property (p_Rx_Ready) begin
+    $display("PASS: Rx_Ready asserted signals data to be read");
+  end else begin
+    $error("FAIL: Rx_Ready asserted, but data isn't ready yet");
     ErrCntAssertions++;
   end
 
