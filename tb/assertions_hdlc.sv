@@ -317,6 +317,13 @@ module assertions_hdlc (
         ErrCntAssertions++;
     end
 
+    Rx_FrameSize_Assert : assert property (p_Rx_FrameSize) begin
+        $display("PASS: #frames received equals Rx_FrameSize");
+    end else begin
+        $error("FAIL: #frames received does not equal Rx_FrameSize");
+        ErrCntAssertions++;
+    end
+
 	  Rx_Ready_Assert : assert property (p_Rx_Ready) begin
 		    $display("PASS: Rx_Ready asserted signals data to be read");
 	  end else begin
