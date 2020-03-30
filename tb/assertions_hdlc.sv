@@ -202,7 +202,7 @@ module assertions_hdlc (
 
 	  // 13. When receiving more than 128 bytes, Rx_Overflow should be asserted
 	  property p_Rx_Overflow;
-        @(posedge Clk) disable iff (!Rst)  $rose(Rx_ValidFrame) ##0 ($rose(Rx_NewByte) [->129]) |=> $rose(Rx_Overflow);
+        @(posedge Clk) disable iff (!Rst)  ($rose(Rx_NewByte) [->129] ##1 $rose(Rx_Overflow)) within ($rose(Rx_ValidFrame) ##0 $fell(Rx_ValidFrame) [->1]);
 	  endproperty
 
 	  // 15. Rx_Ready should indicate byte(s) in RX Buffer is ready to be read
