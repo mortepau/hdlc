@@ -206,8 +206,8 @@ module assertions_hdlc (
 
     // 14. Rx_FrameSize should equal the number of bytes received in a frame.
     property p_Rx_FrameSize;
-        unsigned int bytes = 0;
-        @(posedge Clk) disable iff (!Rst) $rose(Rx_ValidFrame) ##0 (($rose(Rx_NewByte) [->1], bytes++) [->1:127]) ##5 $rose(Rx_EoF) |=> Rx_FrameSize == (bytes - 2); 
+        int bytes = 0;
+        @(posedge Clk) disable iff (!Rst) $rose(Rx_ValidFrame) ##0 ((##[7:9] $rose(Rx_NewByte), bytes++) [*1:128]) ##5 $rose(Rx_EoF) |=> Rx_FrameSize == (bytes - 2);
     endproperty
 
 	  // 15. Rx_Ready should indicate byte(s) in RX Buffer is ready to be read
