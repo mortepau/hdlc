@@ -296,7 +296,7 @@ module assertions_hdlc (
 		    ErrCntAssertions++;
 	  end
 
-    Rx_Overflow_Assert : assert propert (p_Rx_Overflow) begin
+    Rx_Overflow_Assert : assert property (p_Rx_Overflow) begin
         $display("PASS: Rx_Overflow is high after receiving more than 128 bytes");
     end else begin
         $error("FAIL. Rx_Overflow not asserted after receiving more than 128 bytes");
