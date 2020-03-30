@@ -169,9 +169,8 @@ module assertions_hdlc (
 		    @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_idle;
 	  endproperty
 
-	  // Not working
 	  property p_Rx_IdlePattern;
-        @(posedge Clk) disable iff (!Rst) (!Rx_flag and !Rx_ValidFrame [*8]) |-> (Rx and $past(Rx, 1) and $past(Rx, 2) and $past(Rx, 3) and $past(Rx, 4) and $past(Rx, 5) and $past(Rx, 6) and $past(Rx, 7));
+        @(posedge Clk) disable iff (!Rst) Rx_idle |=> !Rx_FlagDetect; 
 	  endproperty
 
 	  // 8. Abort pattern generation and checking.
@@ -211,7 +210,9 @@ module assertions_hdlc (
 	  endproperty
 
 	  // 16. Non-byte aligned data or errors in FCS checking should result in frame error
-
+    property p_FCSerr;
+        @(posedge Clk) disable iff (!Rst) $rose(Rx_FCSerr) && Rx_FCSen |=> $rose(Rx_FrameError);
+    endproperty
 
 	  // 17. Tx_Done should be asserted when entire TX buffer has been read for transmission
 
@@ -309,5 +310,12 @@ module assertions_hdlc (
 		    $error("FAIL: Rx_Ready asserted, but data isn't ready yet");
 		    ErrCntAssertions++;
 	  end
+
+    Rx_FCSerr_Assert : assert property (p_FCSerr) begin
+        $display("PASS: Frame error detected");
+    end else begin
+        $error("FAIL: Frame error not detected");
+        ErrCntAssertions++;
+    end
 
 endmodule
