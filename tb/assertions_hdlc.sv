@@ -206,7 +206,7 @@ module assertions_hdlc (
 
   // 15. Rx_Ready should indicate byte(s) in RX Buffer is ready to be read
   property p_Rx_Ready;
-    @(posedge Clk) disable if (!Rst) $rose(Rx_Ready) |-> $rose(Rx_EoF) and !Rx_ValidFrame;
+    @(posedge Clk) disable iff (!Rst) $rose(Rx_Ready) |-> $rose(Rx_EoF) and !Rx_ValidFrame;
   endproperty
   
 
