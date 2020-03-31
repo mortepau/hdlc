@@ -246,15 +246,15 @@ program testPr_hdlc(
 	endtask
 
 
-    task VerifyNormalTransmit;
+    task VerifyNormalTransmit(logic [127:0][7:0] data, int size);
         $display("VerifyNormalTransmit");
     endtask
 
-    task VerifyAbortTransmit;
+    task VerifyAbortTransmit(logic [127:0][7:0] data, int size);
         $display("VerifyAbortTransmit");
     endtask
 
-    task VerifyOverflowTransmit;
+    task VerifyOverflowTransmit(logic [127:0][7:0] data, int size, int overflowSize);
         $display("VerifyOverflowTransmit");
     endtask
 
