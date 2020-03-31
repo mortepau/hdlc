@@ -442,10 +442,12 @@ program testPr_hdlc(
 
     task MakeTxStimulus(logic [127:0][7:0] Data, int Size, logic [3:0][7:0] OverflowData, int OverflowSize);
         for (int i = 0; i < Size; i++) begin
+            $display("Wrote byte %3d of %3d", i+1, Size);
             WriteAddress(TXBUFF, Data[i]);
         end         
         
         for (int i = 0; i < OverflowSize; i++) begin
+            $display("Wrote overflow byte %3d of %3d", i+1, Size);
             WriteAddress(TXBUFF, OverflowData[i]);
         end
     endtask
@@ -584,7 +586,7 @@ program testPr_hdlc(
         //Modify data so that it contains necessary zeros
         $display("Creating bitstream of data");
         MakeTxOutput(TransmitData, Size, fData, NewSize);
-        $display("Done creating the bitstream of data")
+        $display("Done creating the bitstream of data");
 
         // Start transmission
         $display("Starting the transmission");
@@ -593,7 +595,7 @@ program testPr_hdlc(
 	    repeat(10)
 	        @(posedge uin_hdlc.Clk);
 
-        $display("Verifying behaviour")
+        $display("Verifying behaviour");
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, Size);
 	    else if(Overflow)
