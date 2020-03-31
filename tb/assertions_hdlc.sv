@@ -98,14 +98,14 @@ module assertions_hdlc (
 	endsequence
 
 	sequence Rx_DataZero;
-	    (Rx_Data ==? 8'bxx111110) or
-		(Rx_Data ==? 8'bx111110x) or
 		(Rx_Data ==? 8'b111110xx) or
-		(($past(Rx_Data, 8) ==? 8'b11110xxx) && (Rx_Data ==? 8'bxxxxxxx1)) or
-		(($past(Rx_Data, 8) ==? 8'b1110xxxx) && (Rx_Data ==? 8'bxxxxxx11)) or
-		(($past(Rx_Data, 8) ==? 8'b110xxxxx) && (Rx_Data ==? 8'bxxxxx111)) or
+		(Rx_Data ==? 8'bx111110x) or
+	    (Rx_Data ==? 8'bxx111110) or
+		(($past(Rx_Data, 8) ==? 8'b0xxxxxxx) && (Rx_Data ==? 8'bxxx11111)) or
 		(($past(Rx_Data, 8) ==? 8'b10xxxxxx) && (Rx_Data ==? 8'bxxxx1111)) or
-		(($past(Rx_Data, 8) ==? 8'b0xxxxxxx) && (Rx_Data ==? 8'bxxx11111));
+		(($past(Rx_Data, 8) ==? 8'b110xxxxx) && (Rx_Data ==? 8'bxxxxx111)) or
+		(($past(Rx_Data, 8) ==? 8'b1110xxxx) && (Rx_Data ==? 8'bxxxxxx11)) or
+        (($past(Rx_Data, 8) ==? 8'b11110xxx) && (Rx_Data ==? 8'bxxxxxxx1));
     endsequence
 
 	/***********************
@@ -125,18 +125,18 @@ module assertions_hdlc (
 	endsequence
 
     sequence Tx_zero;
-        !Tx ##1 Tx [*5] ##1 !Tx
+        !Tx ##1 Tx [*5] ##1 !Tx;
     endsequence
 
     sequence Tx_DataZero;
-        (Tx_Data ==? 8'bx0111110) or
-        (Tx_Data ==? 8'b0111110x) or
-        (($past(Tx_Data, 8) ==? 8'b111110xx) && (Tx_Data ==? 8'bxxxxxxx0)) or
-        (($past(Tx_Data, 8) ==? 8'b11110xxx) && (Tx_Data ==? 8'bxxxxxx01)) or
-        (($past(Tx_Data, 8) ==? 8'b1110xxxx) && (Tx_Data ==? 8'bxxxxx011)) or
-        (($past(Tx_Data, 8) ==? 8'b110xxxxx) && (Tx_Data ==? 8'bxxxx0111)) or
-        (($past(Tx_Data, 8) ==? 8'b10xxxxxx) && (Tx_Data ==? 8'bxxx01111)) or
-        (($past(Tx_Data, 8) ==? 8'b0xxxxxxx) && (Tx_Data ==? 8'bxx011111)) or
+        (Tx_Data ==? 8'b111110xx) or
+        (Tx_Data ==? 8'bx111110x) or
+        (Tx_Data ==? 8'bxx111110) or
+        (($past(Tx_Data, 8) ==? 8'b0xxxxxxx) && (Tx_Data ==? 8'bxxx11111)) or
+        (($past(Tx_Data, 8) ==? 8'b10xxxxxx) && (Tx_Data ==? 8'bxxxx1111)) or
+        (($past(Tx_Data, 8) ==? 8'b110xxxxx) && (Tx_Data ==? 8'bxxxxx111)) or
+        (($past(Tx_Data, 8) ==? 8'b1110xxxx) && (Tx_Data ==? 8'bxxxxxx11)) or
+        (($past(Tx_Data, 8) ==? 8'b11110xxx) && (Tx_Data ==? 8'bxxxxxxx1));
     endsequence
 
 	/*******************************************
@@ -169,9 +169,9 @@ module assertions_hdlc (
 	endproperty
 
 	// 6. Zero insertion and removal of transparent transmission.
-	// Not working
+    // Not checked
 	property p_Tx_InsertZero;
-        @(posedge Clk) disable iff (!Rst) Tx_zero |-> Tx_zeroInsert;
+        @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:20] Tx_zero;
 	endproperty
 
 	property p_Rx_RemoveZero;
