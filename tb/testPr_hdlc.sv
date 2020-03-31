@@ -271,16 +271,24 @@ program testPr_hdlc(
 
 	    Init();
 
-	    //Receive: Size, Abort, FCSerr, NonByteAligned, Overflow, Drop, SkipRead
-	    Receive( 10, 0, 0, 0, 0, 0, 0); //Normal
-	    Receive( 40, 1, 0, 0, 0, 0, 0); //Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); //Overflow
-	    Receive( 45, 0, 0, 0, 0, 0, 0); //Normal
-	    Receive(126, 0, 0, 0, 0, 0, 0); //Normal
-	    Receive(122, 1, 0, 0, 0, 0, 0); //Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); //Overflow
-	    Receive( 25, 0, 0, 0, 0, 0, 0); //Normal
-	    Receive( 47, 0, 0, 0, 0, 0, 0); //Normal
+	    // Receive: Size, Abort, FCSerr, NonByteAligned, Overflow, Drop, SkipRead
+	    Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
+	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive(126, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive(122, 1, 0, 0, 0, 0, 0); // Abort
+	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
+
+        //Transmit: Size, Abort, Overflow
+        Transmit( 10, 0, 0); // Normal
+        Transmit(122, 1, 0); // Abort
+        Transmit( 40, 0, 0); // Normal
+        Transmit(126, 0, 0); // Normal
+        Transmit(126, 0, 1); // Overflow
+        Transmit(122, 0, 0); // Normal
 
 	    $display("*************************************************************");
 	    $display("%t - Finishing Test Program", $time);
@@ -609,7 +617,7 @@ program testPr_hdlc(
         // Append FCS's
         fData[newSize+7+:8] = data[size];
         newSize += 8;
-        fData[newSize+7:8] = data[size+1];
+        fData[newSize+7+:8] = data[size+1];
         newSize += 8;
     endtask
 
