@@ -93,8 +93,8 @@ module assertions_hdlc (
 	    !Rx ##1 Rx [*7];
     endsequence
 
-	sequence Rx_zeroInsert;
-	    $rose(Rx) ##1 Rx [*4] ##1 !Rx;
+	sequence Rx_zero;
+	    !Rx ##1 Rx [*5] ##1 !Rx;
 	endsequence
 
 	sequence Rx_DataZero;
@@ -124,6 +124,21 @@ module assertions_hdlc (
 	    !Tx ##1 Tx [*7];
 	endsequence
 
+    sequence Tx_zero;
+        !Tx ##1 Tx [*5] ##1 !Tx
+    endsequence
+
+    sequence Tx_DataZero;
+        (Tx_Data ==? 8'bx0111110) or
+        (Tx_Data ==? 8'b0111110x) or
+        (($past(Tx_Data, 8) ==? 8'b111110xx) && (Tx_Data ==? 8'bxxxxxxx0)) or
+        (($past(Tx_Data, 8) ==? 8'b11110xxx) && (Tx_Data ==? 8'bxxxxxx01)) or
+        (($past(Tx_Data, 8) ==? 8'b1110xxxx) && (Tx_Data ==? 8'bxxxxx011)) or
+        (($past(Tx_Data, 8) ==? 8'b110xxxxx) && (Tx_Data ==? 8'bxxxx0111)) or
+        (($past(Tx_Data, 8) ==? 8'b10xxxxxx) && (Tx_Data ==? 8'bxxx01111)) or
+        (($past(Tx_Data, 8) ==? 8'b0xxxxxxx) && (Tx_Data ==? 8'bxx011111)) or
+    endsequence
+
 	/*******************************************
 	*                Properties               *
 	*******************************************/
@@ -133,7 +148,7 @@ module assertions_hdlc (
 	    @(posedge Clk) disable iff(!Rst) $rose(Rx_EoF) |->
 		    if (Rx_FrameError)
 			    !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
-		    if (Rx_AbortSignal && Rx_Overflow)
+		    else if (Rx_AbortSignal && Rx_Overflow)
 			     Rx_Ready &&  Rx_Overflow &&  Rx_AbortSignal &&  Rx_FrameError
 		    else if (Rx_AbortSignal)
 			     Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError
@@ -156,11 +171,11 @@ module assertions_hdlc (
 	// 6. Zero insertion and removal of transparent transmission.
 	// Not working
 	property p_Tx_InsertZero;
-	    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |=> ##[0:2] Rx_NewByte ##0 (Rx_Data == 8'bxxx11111 || Rx_Data == 8'bxx11111x || Rx_Data == 8'bx11111xx || Rx_Data == 8'b11111xxx)
+        @(posedge Clk) disable iff (!Rst) Tx_zero |-> Tx_zeroInsert;
 	endproperty
 
 	property p_Rx_RemoveZero;
-	    @(posedge Clk) disable iff (!Rst || !Rx_ValidFrame) Rx_zeroInsert |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero;
+	    @(posedge Clk) disable iff (!Rst) (Rx_zero and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero;
 	endproperty
 
 	// 7. Idle pattern generation and checking
@@ -261,24 +276,24 @@ module assertions_hdlc (
 	Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin
 	    $display("PASS: Zero insertion successful");
 	end else begin
-	    $error("Zero insertion not detected");
+	    $error("FAIL: Zero insertion not detected");
 	    ErrCntAssertions++;
 	end
 
 	Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
 	    $display("PASS: Zero removal successful - Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
 	end else begin
-	    $error("Zero removal not detected, Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
+	    $error("FAIL: Zero removal not detected, Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
 	    ErrCntAssertions++;
 	end
 
 	Tx_IdlePattern_Assert : assert property (p_Tx_IdlePattern) else begin
-	    $error("Idle pattern not detected on transmitting side");
+	    $error("FAIL: Idle pattern not detected on transmitting side");
 	    ErrCntAssertions++;
 	end
 
 	Rx_IdlePattern_Assert : assert property (p_Rx_IdlePattern) else begin
-	    $error("Idle pattern not detected on receiving side");
+	    $error("FAIL: Idle pattern not detected on receiving side");
 	    ErrCntAssertions++;
 	end
 
