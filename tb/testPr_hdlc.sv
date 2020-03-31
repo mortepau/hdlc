@@ -579,7 +579,7 @@ program testPr_hdlc(
 	    else if(Overflow)
 	        VerifyOverflowTransmit(TransmitData, Size, 3);
 	    else
-	        VerifyNormalTransmit(Transmit, Size);
+	        VerifyNormalTransmit(TransmitData, Size);
 
         #5000ns;
     endtask
@@ -607,9 +607,9 @@ program testPr_hdlc(
         end
 
         // Append FCS's
-        fData[newSize+7:newSize] = data[size];
+        fData[newSize+7+:8] = data[size];
         newSize += 8;
-        fData[newSize+7:newSize] = data[size+1];
+        fData[newSize+7:8] = data[size+1];
         newSize += 8;
     endtask
 
