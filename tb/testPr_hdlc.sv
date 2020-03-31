@@ -572,22 +572,22 @@ program testPr_hdlc(
     endtask
 
     task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 201:0] fData, output int newSize);
-        logic [4:0] checkZero = '0;
+        logic [4:0] checkZero = 4'b0;
         logic insertZero = 1'b0;
         newSize = 0;
 
         // Insert zeros if necessary
         for (int i = 0; i < size; i++) begin
             for (int j = 0; j < 8; j++) begin
-                insertZero = &checkData;
+                insertZero = &checkZero;
                 if (insertZero == 1'b1) begin
                     fData[newSize] = 1'b0;
                     newSize++;
                 end
                 fData[newSize] = data[i][j];
                 newSize++;
-                checkData = checkData >> 1;
-                checkData[4] = data[i][j];
+                checkZero = checkZero >> 1;
+                checkZero[4] = data[i][j];
             end
         end
 
