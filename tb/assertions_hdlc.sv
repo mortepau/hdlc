@@ -191,7 +191,7 @@ module assertions_hdlc (
 
 	  // 10. Abort pattern detected during valid frame should generate Rx_AbortSignal
 	  property p_Rx_AbortSignal;
-		    @(posedge Clk) disable iff (!Rst) Rx_ValidFrame && Rx_AbortDetect |=> Rx_AbortSignal; // Added by Morten
+		    @(posedge Clk) disable iff (!Rst) Rx_ValidFrame && Rx_AbortDetect |=> Rx_AbortSignal;
 	  endproperty
 
 	  // 12. When a whole RX frame has been received, check if end of frame is generated
@@ -217,7 +217,7 @@ module assertions_hdlc (
 
 	  // 16. Non-byte aligned data or errors in FCS checking should result in frame error
     // Not checked
-    property p_FCSerr;
+    property p_Rx_FCSerr;
         @(posedge Clk) disable iff (!Rst) $rose(Rx_FCSerr) && Rx_FCSen |=> $rose(Rx_FrameError);
     endproperty
 
@@ -296,6 +296,13 @@ module assertions_hdlc (
 		    ErrCntAssertions++;
 	  end
 
+    Tx_AbortSignal_Assert : assert property (p_Tx_AbortSignal) begin
+        $display("PASS: Tx_AbortedTrans asserted");
+    end else begin
+        $error("FAIL: Tx_AbortedTrans wasn't asserted");
+        ErrCntAssertions++;
+    end
+
 	  Rx_AbortSignal_Assert : assert property (p_Rx_AbortSignal) begin
 		    $display("PASS: Abort signal");
 	  end else begin 
@@ -331,7 +338,7 @@ module assertions_hdlc (
 		    ErrCntAssertions++;
 	  end
 
-    Rx_FCSerr_Assert : assert property (p_FCSerr) begin
+    Rx_FCSerr_Assert : assert property (p_Rx_FCSerr) begin
         $display("PASS: Frame error detected");
     end else begin
         $error("FAIL: Frame error not detected");
