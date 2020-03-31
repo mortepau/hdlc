@@ -98,14 +98,14 @@ module assertions_hdlc (
 	endsequence
 
 	sequence Rx_DataZero;
-		(Rx_Data ==? 8'b111110xx) or
-		(Rx_Data ==? 8'bx111110x) or
-	    (Rx_Data ==? 8'bxx111110) or
-		(($past(Rx_Data, 8) ==? 8'b0xxxxxxx) && (Rx_Data ==? 8'bxxx11111)) or
-		(($past(Rx_Data, 8) ==? 8'b10xxxxxx) && (Rx_Data ==? 8'bxxxx1111)) or
-		(($past(Rx_Data, 8) ==? 8'b110xxxxx) && (Rx_Data ==? 8'bxxxxx111)) or
-		(($past(Rx_Data, 8) ==? 8'b1110xxxx) && (Rx_Data ==? 8'bxxxxxx11)) or
-        (($past(Rx_Data, 8) ==? 8'b11110xxx) && (Rx_Data ==? 8'bxxxxxxx1));
+        ( Rx_Data ==? 8'b111110xx) or
+        ( Rx_Data ==? 8'bx111110x) or
+        ( Rx_Data ==? 8'bxx111110) or
+        ((Rx_Data ==? 8'bxxx11111) && ($past(Rx_Data, 8) ==? 8'b0xxxxxxx)) or
+        ((Rx_Data ==? 8'bxxxx1111) && ($past(Rx_Data, 8) ==? 8'b10xxxxxx)) or
+        ((Rx_Data ==? 8'bxxxxx111) && ($past(Rx_Data, 8) ==? 8'b110xxxxx)) or
+        ((Rx_Data ==? 8'bxxxxxx11) && ($past(Rx_Data, 8) ==? 8'b1110xxxx)) or
+        ((Rx_Data ==? 8'bxxxxxxx1) && ($past(Rx_Data, 8) ==? 8'b11110xxx));
     endsequence
 
 	/***********************
@@ -129,14 +129,14 @@ module assertions_hdlc (
     endsequence
 
     sequence Tx_DataZero;
-        (Tx_Data ==? 8'b111110xx) or
-        (Tx_Data ==? 8'bx111110x) or
-        (Tx_Data ==? 8'bxx111110) or
-        (($past(Tx_Data, 8) ==? 8'b0xxxxxxx) && (Tx_Data ==? 8'bxxx11111)) or
-        (($past(Tx_Data, 8) ==? 8'b10xxxxxx) && (Tx_Data ==? 8'bxxxx1111)) or
-        (($past(Tx_Data, 8) ==? 8'b110xxxxx) && (Tx_Data ==? 8'bxxxxx111)) or
-        (($past(Tx_Data, 8) ==? 8'b1110xxxx) && (Tx_Data ==? 8'bxxxxxx11)) or
-        (($past(Tx_Data, 8) ==? 8'b11110xxx) && (Tx_Data ==? 8'bxxxxxxx1));
+        ( Tx_Data ==? 8'b111110xx) or
+        ( Tx_Data ==? 8'bx111110x) or
+        ( Tx_Data ==? 8'bxx111110) or
+        ((Tx_Data ==? 8'bxxx11111) && ($past(Tx_Data, 8) ==? 8'b0xxxxxxx)) or
+        ((Tx_Data ==? 8'bxxxx1111) && ($past(Tx_Data, 8) ==? 8'b10xxxxxx)) or
+        ((Tx_Data ==? 8'bxxxxx111) && ($past(Tx_Data, 8) ==? 8'b110xxxxx)) or
+        ((Tx_Data ==? 8'bxxxxxx11) && ($past(Tx_Data, 8) ==? 8'b1110xxxx)) or
+        ((Tx_Data ==? 8'bxxxxxxx1) && ($past(Tx_Data, 8) ==? 8'b11110xxx));
     endsequence
 
 	/*******************************************
