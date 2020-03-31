@@ -419,6 +419,16 @@ program testPr_hdlc(
 	    end
 	endtask
 
+    task MakeTxStimulus(logic [127:0][7:0] Data, int Size, logic [3:0][7:0] OverflowData, int OverflowSize);
+        for (int i = 0; i < Size; i++) begin
+            WriteAddress(TXBUFF, Data[i]);
+        end         
+        
+        for (int i = 0; i < OverflowSize; i++) begin
+            WriteAddress(TXBUFF, OverflowData[i]);
+        end
+    endtask
+
 	task Receive(int Size, int Abort, int FCSerr, int NonByteAligned, int Overflow, int Drop, int SkipRead);
 	    logic [127:0][7:0] ReceiveData;
 	    logic       [15:0] FCSBytes;
@@ -500,6 +510,93 @@ program testPr_hdlc(
 
 	    #5000ns;
 	endtask
+
+	task Transmit(int Size, int Abort, int Overflow);
+	    logic [125:0][7:0] TransmitData;
+	    logic       [15:0] FCSBytes;
+	    logic   [2:0][7:0] OverflowData;
+        logic [1225:0]     fData;
+        int                NewSize;
+	    string msg;
+
+	    if(Abort)
+	        msg = "- Abort";
+	    else if(Overflow)
+	        msg = "- Overflow";
+	    else
+	        msg = "- Normal";
+	  
+        $display("*************************************************************");
+	    $display("%t - Starting task Transmit %s", $time, msg);
+	    $display("*************************************************************");
+
+	    for (int i = 0; i < Size; i++) begin
+	        TransmitData[i] = $urandom;
+	    end
+
+	    //Calculate FCS bits;
+	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
+	    TransmitData[Size]   = FCSBytes[8:15];
+	    TransmitData[Size+1] = FCSBytes[0:7];
+	  
+	    if(Overflow) begin
+	        OverflowData[0] = 8'h44;
+	        OverflowData[1] = 8'hBB;
+	        OverflowData[2] = 8'hCC;
+            MakeTxStimulus(TransmitData, OverFlowData, Size, 3);
+        end else begin
+            MakeTxStimulus(TransmitData, OverFlowData, Size, 0);
+        end
+
+        if (Abort) begin
+            WriteAddress(TXSC, 8'h04);
+        end
+
+        //Modify data so that it contains necessary zeros
+        MakeTxOutput(TransmitData, Size, FlattenData, NewSize);
+
+        // Start transmission
+        WriteAddress(TXSC, 8'h02);
+
+	    repeat(8)
+	        @(posedge uin_hdlc.Clk);
+
+	    if(Abort)
+	        VerifyAbortTransmit(TransmitData, Size);
+	    else if(Overflow)
+	        VerifyOverflowTransmit(TransmitData, Size, 3);
+	    else
+	        VerifyNormalTransmit(Transmit, Size);
+
+        #5000ns;
+    endtask
+
+    task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 201:0] fData, output int newSize);
+        logic [4:0] checkZero = '0;
+        logic insertZero = 1'b0;
+        newSize = 0;
+
+        // Insert zeros if necessary
+        for (int i = 0; i < size; i++) begin
+            for (int j = 0; j < 8; j++) begin
+                insertZero = &checkData;
+                if (insertZero == 1'b1) begin
+                    fData[newSize] = 1'b0;
+                    newSize++;
+                end
+                fData[newSize] = data[i][j];
+                newSize++;
+                checkData = checkData >> 1;
+                checkData[4] = data[i][j];
+            end
+        end
+
+        // Append FCS's
+        fData[newSize+7:newSize] = data[size];
+        newSize += 8;
+        fData[newSize+7:newSize] = data[size+1];
+        newSize += 8;
+    endtask
 
 	task GenerateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
 	    logic [23:0] CheckReg;
