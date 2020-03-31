@@ -572,8 +572,10 @@ program testPr_hdlc(
     endtask
 
     task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 201:0] fData, output int newSize);
-        logic [4:0] checkZero = 4'b0;
-        logic insertZero = 1'b0;
+        logic [4:0] checkZero;
+        logic insertZero;
+
+        checkZero = 4'b0;
         newSize = 0;
 
         // Insert zeros if necessary
