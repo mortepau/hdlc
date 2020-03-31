@@ -245,6 +245,19 @@ program testPr_hdlc(
 	    end
 	endtask
 
+
+    task VerifyNormalTransmit;
+        $display("VerifyNormalTransmit");
+    endtask
+
+    task VerifyAbortTransmit;
+        $display("VerifyAbortTransmit");
+    endtask
+
+    task VerifyOverflowTransmit;
+        $display("VerifyOverflowTransmit");
+    endtask
+
 	/****************************************************************************
 	 *                                                                          *
 	 *                             Simulation code                              *
@@ -515,7 +528,7 @@ program testPr_hdlc(
 	    logic [125:0][7:0] TransmitData;
 	    logic       [15:0] FCSBytes;
 	    logic   [2:0][7:0] OverflowData;
-        logic [1225:0]     fData;
+        logic [1224:0]     fData;
         int                NewSize;
 	    string msg;
 
@@ -536,16 +549,16 @@ program testPr_hdlc(
 
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
-	    TransmitData[Size]   = FCSBytes[8:15];
-	    TransmitData[Size+1] = FCSBytes[0:7];
+	    TransmitData[Size]   = FCSBytes[15:8];
+	    TransmitData[Size+1] = FCSBytes[7:0];
 	  
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
 	        OverflowData[1] = 8'hBB;
 	        OverflowData[2] = 8'hCC;
-            MakeTxStimulus(TransmitData, OverFlowData, Size, 3);
+            MakeTxStimulus(TransmitData, OverflowData, Size, 3);
         end else begin
-            MakeTxStimulus(TransmitData, OverFlowData, Size, 0);
+            MakeTxStimulus(TransmitData, OverflowData, Size, 0);
         end
 
         if (Abort) begin
@@ -553,7 +566,7 @@ program testPr_hdlc(
         end
 
         //Modify data so that it contains necessary zeros
-        MakeTxOutput(TransmitData, Size, FlattenData, NewSize);
+        MakeTxOutput(TransmitData, Size, fData, NewSize);
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
@@ -571,7 +584,7 @@ program testPr_hdlc(
         #5000ns;
     endtask
 
-    task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 201:0] fData, output int newSize);
+    task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 200:0] fData, output int newSize);
         logic [4:0] checkZero;
         logic insertZero;
 
