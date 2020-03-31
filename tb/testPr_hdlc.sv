@@ -551,37 +551,49 @@ program testPr_hdlc(
 	    $display("%t - Starting task Transmit %s", $time, msg);
 	    $display("*************************************************************");
 
+        $display("Creating random data");
 	    for (int i = 0; i < Size; i++) begin
 	        TransmitData[i] = $urandom;
 	    end
 
 	    //Calculate FCS bits;
+        $display("Calculating FCS bytes");
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
 	    TransmitData[Size]   = FCSBytes[15:8];
 	    TransmitData[Size+1] = FCSBytes[7:0];
 	  
 	    if(Overflow) begin
+            $display("Creating overflow data");
 	        OverflowData[0] = 8'h44;
 	        OverflowData[1] = 8'hBB;
 	        OverflowData[2] = 8'hCC;
+            $display("Making stimulus");
             MakeTxStimulus(TransmitData, OverflowData, Size, 3);
+            $display("Done making stimulus");
         end else begin
+            $display("Making stimulus");
             MakeTxStimulus(TransmitData, OverflowData, Size, 0);
+            $display("Done making stimulus");
         end
 
         if (Abort) begin
+            $display("Aborting data");
             WriteAddress(TXSC, 8'h04);
         end
 
         //Modify data so that it contains necessary zeros
+        $display("Creating bitstream of data");
         MakeTxOutput(TransmitData, Size, fData, NewSize);
+        $display("Done creating the bitstream of data")
 
         // Start transmission
+        $display("Starting the transmission");
         WriteAddress(TXSC, 8'h02);
 
-	    repeat(8)
+	    repeat(10)
 	        @(posedge uin_hdlc.Clk);
 
+        $display("Verifying behaviour")
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, Size);
 	    else if(Overflow)
@@ -590,6 +602,11 @@ program testPr_hdlc(
 	        VerifyNormalTransmit(TransmitData, Size);
 
         #5000ns;
+
+        uin_hdlc.Rst = 1'b0;
+        #100ns;
+        uin_hdlc.Rst = 1'b1;
+        #100ns;
     endtask
 
     task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 200:0] fData, output int newSize);
