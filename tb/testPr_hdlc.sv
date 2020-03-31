@@ -570,11 +570,11 @@ program testPr_hdlc(
 	        OverflowData[1] = 8'hBB;
 	        OverflowData[2] = 8'hCC;
             $display("Making stimulus");
-            MakeTxStimulus(TransmitData, OverflowData, Size, 3);
+            MakeTxStimulus(TransmitData, Size, OverflowData, 3);
             $display("Done making stimulus");
         end else begin
             $display("Making stimulus");
-            MakeTxStimulus(TransmitData, OverflowData, Size, 0);
+            MakeTxStimulus(TransmitData, Size, OverflowData, 0);
             $display("Done making stimulus");
         end
 
