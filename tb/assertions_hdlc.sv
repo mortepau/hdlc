@@ -239,7 +239,7 @@ module assertions_hdlc (
     // 17. Tx_Done should be asserted when entire TX buffer has been read for transmission
 	// Not checked
 	property p_Tx_Done;
-	    @(posedge Clk) disable iff (!Rst) $fell(Tx_DataAvail) |=> $rose(Tx_Done);
+	    @(posedge Clk) disable iff (!Rst) $fell(Tx_DataAvail) |-> $past(Tx_Done, 1);
 	endproperty
 
 	// 18. Tx_Full should be asserted after writing 126 or more bytes to the TX buffer (overflow)
