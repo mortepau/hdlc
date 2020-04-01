@@ -249,9 +249,6 @@ program testPr_hdlc(
 
     task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
         logic [7:0] Byte;
-        // Enable transmission
-        $display("Enabled Tx transmission");
-        WriteAddress(TXSC, 8'h02);
         
         // Check flag
         // Wait for flag to begin
@@ -290,6 +287,7 @@ program testPr_hdlc(
         end
         assert(FCSBytes == fdata[size+:16]) else begin
             $display("FAIL: FCSBytes not correct");
+        end
 
         $display("All bytes checked");
 
@@ -505,12 +503,10 @@ program testPr_hdlc(
 
     task MakeTxStimulus(logic [127:0][7:0] Data, int Size, logic [3:0][7:0] OverflowData, int OverflowSize);
         for (int i = 0; i < Size; i++) begin
-            $display("Wrote byte %3d of %3d", i+1, Size);
             WriteAddress(TXBUFF, Data[i]);
         end         
         
         for (int i = 0; i < OverflowSize; i++) begin
-            $display("Wrote overflow byte %3d of %3d", i+1, Size);
             WriteAddress(TXBUFF, OverflowData[i]);
         end
     endtask
@@ -602,6 +598,7 @@ program testPr_hdlc(
 	    logic       [15:0] FCSBytes;
 	    logic   [2:0][7:0] OverflowData;
         logic [1224:0]     fData;
+        logic        [7:0] ReadData;
         int                NewSize;
 	    string msg;
 
@@ -634,21 +631,16 @@ program testPr_hdlc(
             MakeTxStimulus(TransmitData, Size, OverflowData, 0);
         end
 
-        //Modify data so that it contains necessary zeros
+        //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize);
+        $display("Increased from %d to %d", Size*8 + 2, NewSize);
+
+        // Wait for Tx_Done to be asserted
+        while (!ReadData[0])
+            ReadAddress(TXSC, ReadData);
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
-
-	    repeat(1000)
-	        @(posedge uin_hdlc.Clk);
-
-        if (Abort) begin
-            WriteAddress(TXSC, 8'h04);
-        end
-
-        // Wait for Tx_Done to be asserted
-        @(posedge uin_hdlc.Tx_Done);
 
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, NewSize);
