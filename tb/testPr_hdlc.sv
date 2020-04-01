@@ -250,12 +250,13 @@ program testPr_hdlc(
     task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
         logic [7:0] Byte;
         // Enable transmission
+        $display("Enabled Tx transmission");
         WriteAddress(TXSC, 8'h02);
         
         // Check flag
         // Wait for flag to begin
+        $display("Waiting for negedge on Tx");
         @(negedge uin_hdlc.Tx);
-        @(posedge uin_hdlc.Clk);
             assert (uin_hdlc.Tx == 1'b0);
         @(posedge uin_hdlc.Clk);
             assert (uin_hdlc.Tx == 1'b1);
@@ -271,6 +272,7 @@ program testPr_hdlc(
             assert (uin_hdlc.Tx == 1'b1);
         @(posedge uin_hdlc.Clk);
             assert (uin_hdlc.Tx == 1'b0);
+        $display("Flag received");
 
         // Check data
         for (int i = 0; i < size; i++) begin
@@ -279,14 +281,17 @@ program testPr_hdlc(
                     $display("FAIL: Tx is not equal expected output");
                 end
         end
+        $display("All data received");
 
         // Check FCS bytes
         for (int i = 0; i < 16; i++) begin
             @(posedge uin_hdlc.Clk);
-                assert(fdata[size + i] == uin_hdlc.Tx) else begin
-                    $display("FAIL: FCS bit was not correct");
-                end
+                FCSBytes[i] = fdata[size+i];
         end
+        assert(FCSBytes == fdata[size+:16]) else begin
+            $display("FAIL: FCSBytes not correct");
+
+        $display("All bytes checked");
 
         // Check flag
         @(posedge uin_hdlc.Clk);
@@ -305,6 +310,7 @@ program testPr_hdlc(
             assert (uin_hdlc.Tx == 1'b1);
         @(posedge uin_hdlc.Clk);
             assert (uin_hdlc.Tx == 1'b0);
+        $display("End flag received");
     endtask
 
     task VerifyAbortTransmit(logic [127:0][7:0] data, int size);
