@@ -637,11 +637,14 @@ program testPr_hdlc(
         $display("Increased from %d to %d", Size*8 + 2, NewSize);
 
         // Wait for Tx_Done to be asserted
+        $display("Waiting for Tx_Done");
         if (uin_hdlc.Tx_Done == 1'b0)
             @(posedge uin_hdlc.Tx_Done);
+        $display("Tx_Done received");
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
+        $display("Started transmission");
 
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, NewSize);
