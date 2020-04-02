@@ -250,45 +250,8 @@ program testPr_hdlc(
     task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
         logic [15:0] FCSBytes;
         
-        // Check flag
-        // Wait for flag to begin
-        $display("Waiting for negedge on Tx");
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b0) else begin
-            $display("FAIL: Wrong flag bit 1");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 2");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 3");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 4");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 5");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 6");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b1) else begin
-            $display("FAIL: Wrong flag bit 7");
-        end
-        @(posedge uin_hdlc.Clk);
-        assert (uin_hdlc.Tx == 1'b0) else begin
-            $display("FAIL: Wrong flag bit 8");
-        end
-        $display("Flag received");
-
         // Check data
-        for (int i = 0; i < size; i++) begin
+        for (int i = 0; i < size - 16 - 8; i++) begin
             @(posedge uin_hdlc.Clk);
                 $display("bit %4d : fdata[%1d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
@@ -302,29 +265,25 @@ program testPr_hdlc(
             @(posedge uin_hdlc.Clk);
                 FCSBytes[i] = fdata[size+i];
         end
-        assert(FCSBytes == fdata[size+:16]) else begin
+        assert(FCSBytes == fdata[size-8-16+:16]) else begin
             $display("FAIL: FCSBytes not correct");
         end
 
         $display("All bytes checked");
 
         // Check flag
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b0);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
-        @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b0);
+        for (int i = size-8; i < size; i++) begin
+            @(posedge uin_hdlc.Clk);
+                if (i == size - 8 || i == size - 1) begin
+                    assert(fdata[i] == !uin_hdlc.Tx) else begin
+                        $display("FAIL: Tx is not equal expected output");
+                    end
+                end else begin
+                    assert(fdata[i] == uin_hdlc.Tx) else begin
+                        $display("FAIL: Tx is not equal expected output");
+                    end
+                end
+        end
         $display("End flag received");
     endtask
 
