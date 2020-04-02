@@ -249,9 +249,21 @@ program testPr_hdlc(
 
     task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
         logic [15:0] FCSBytes;
+        logic  [7:0] flag;
         
+        flag = 8'b0111_1110;
+        
+        // Check flag
+        for (int f = 0; f < 8; f++) begin
+            @(posedge uin_hdlc.Clk);
+                assert(uin_hdlc.Tx == flag[f]) else begin
+                    $display("Flag bit %1d is wrong", f);
+                end
+        end
+        $display("Start flag received");
+
         // Check data
-        for (int i = 0; i < size - 16 - 8; i++) begin
+        for (int i = 0; i < size - 16; i++) begin
             @(posedge uin_hdlc.Clk);
                 $display("bit %4d : fdata[%1d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
@@ -265,23 +277,17 @@ program testPr_hdlc(
             @(posedge uin_hdlc.Clk);
                 FCSBytes[i] = fdata[size+i];
         end
-        assert(FCSBytes == fdata[size-8-16+:16]) else begin
+        assert(FCSBytes == fdata[size-16+:16]) else begin
             $display("FAIL: FCSBytes not correct");
         end
 
         $display("All bytes checked");
 
         // Check flag
-        for (int i = size-8; i < size; i++) begin
+        for (int f = 0; f < 8; f++) begin
             @(posedge uin_hdlc.Clk);
-                if (i == size - 8 || i == size - 1) begin
-                    assert(fdata[i] == !uin_hdlc.Tx) else begin
-                        $display("FAIL: Tx is not equal expected output");
-                    end
-                end else begin
-                    assert(fdata[i] == uin_hdlc.Tx) else begin
-                        $display("FAIL: Tx is not equal expected output");
-                    end
+                assert(uin_hdlc.Tx == flag[f]) else begin
+                    $display("Flag bit %1d is wrong", f);
                 end
         end
         $display("End flag received");
@@ -493,24 +499,6 @@ program testPr_hdlc(
         prevData = '0;
         newSize = 0;
 
-        // Insert flag
-        fData[newSize] = 1'b0;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b0;
-        newSize++;
-
         // Insert zeros if necessary
         for (int i = 0; i < Size; i++) begin
             for (int j = 0; j < 8; j++) begin
@@ -535,24 +523,6 @@ program testPr_hdlc(
         newSize += 8;
         fData[newSize+7+:8] = Data[Size+1];
         newSize += 8;
-
-        // Insert flag
-        fData[newSize] = 1'b0;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b1;
-        newSize++;
-        fData[newSize] = 1'b0;
-        newSize++;
     endtask
 
 	task Receive(int Size, int Abort, int FCSerr, int NonByteAligned, int Overflow, int Drop, int SkipRead);
@@ -662,8 +632,8 @@ program testPr_hdlc(
 
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
-	    TransmitData[Size]   = FCSBytes[15:8];
-	    TransmitData[Size+1] = FCSBytes[7:0];
+	    TransmitData[Size] = FCSBytes[7:0];
+	    TransmitData[Size+1]   = FCSBytes[15:8];
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize);
@@ -694,11 +664,11 @@ program testPr_hdlc(
         @(posedge uin_hdlc.Clk);
 
 	    if(Abort)
-	        VerifyAbortTransmit(TransmitData, NewSize);
+	        VerifyAbortTransmit(fData, NewSize);
 	    else if(Overflow)
-	        VerifyOverflowTransmit(TransmitData, NewSize, 3);
+	        VerifyOverflowTransmit(fData, NewSize, 3);
 	    else
-	        VerifyNormalTransmit(TransmitData, NewSize);
+	        VerifyNormalTransmit(fData, NewSize);
 
         #5000ns;
 
