@@ -531,7 +531,7 @@ program testPr_hdlc(
     task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize);
         logic [4:0] prevData;
 
-        checkZero = '0;
+        prevData = '0;
         newSize = 0;
 
         // Insert flag
@@ -572,9 +572,9 @@ program testPr_hdlc(
         end
 
         // Append FCS's
-        fData[newSize+7+:8] = data[size];
+        fData[newSize+7+:8] = Data[Size];
         newSize += 8;
-        fData[newSize+7+:8] = data[size+1];
+        fData[newSize+7+:8] = Data[Size+1];
         newSize += 8;
 
         // Insert flag
