@@ -623,6 +623,11 @@ program testPr_hdlc(
 	    TransmitData[Size]   = FCSBytes[15:8];
 	    TransmitData[Size+1] = FCSBytes[7:0];
 	  
+        //Modify data so that it contains necessary zeros and is flattened
+        MakeTxOutput(TransmitData, Size, fData, NewSize);
+        $display("Increased from %d to %d", Size*8 + 2, NewSize);
+
+        $display("Making Tx stimuli");
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
 	        OverflowData[1] = 8'hBB;
@@ -631,10 +636,7 @@ program testPr_hdlc(
         end else begin
             MakeTxStimulus(TransmitData, Size, OverflowData, 0);
         end
-
-        //Modify data so that it contains necessary zeros and is flattened
-        MakeTxOutput(TransmitData, Size, fData, NewSize);
-        $display("Increased from %d to %d", Size*8 + 2, NewSize);
+        $display("Finished Tx stimuli");
 
         // Wait for Tx_Done to be asserted
         $display("Waiting for Tx_Done");
