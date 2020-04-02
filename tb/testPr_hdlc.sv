@@ -256,27 +256,35 @@ program testPr_hdlc(
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b0) else begin
             $display("FAIL: Wrong flag bit 1");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 2");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 3");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 4");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 5");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 6");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b1) else begin
             $display("FAIL: Wrong flag bit 7");
+        end
         @(posedge uin_hdlc.Clk);
         assert (uin_hdlc.Tx == 1'b0) else begin
             $display("FAIL: Wrong flag bit 8");
+        end
         $display("Flag received");
 
         // Check data
