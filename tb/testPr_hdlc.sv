@@ -248,7 +248,7 @@ program testPr_hdlc(
 
 
     task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
-        logic [7:0] Byte;
+        logic [15:0] FCSBytes;
         
         // Check flag
         // Wait for flag to begin
@@ -274,6 +274,7 @@ program testPr_hdlc(
         // Check data
         for (int i = 0; i < size; i++) begin
             @(posedge uin_hdlc.Clk);
+                $display("bit %4d : fdata[%d]=%d, Tx=%d", i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
                     $display("FAIL: Tx is not equal expected output");
                 end
