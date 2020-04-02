@@ -274,7 +274,7 @@ program testPr_hdlc(
         // Check data
         for (int i = 0; i < size; i++) begin
             @(posedge uin_hdlc.Clk);
-                $display("bit %4d : fdata[%d]=%d, Tx=%d", i, fdata[i], uin_hdlc.Tx);
+                $display("bit %4d : fdata[%d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
                     $display("FAIL: Tx is not equal expected output");
                 end
