@@ -253,22 +253,30 @@ program testPr_hdlc(
         // Check flag
         // Wait for flag to begin
         $display("Waiting for negedge on Tx");
-        @(negedge uin_hdlc.Tx);
-            assert (uin_hdlc.Tx == 1'b0);
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b0) else begin
+            $display("FAIL: Wrong flag bit 1");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 2");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 3");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 4");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 5");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b1);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 6");
         @(posedge uin_hdlc.Clk);
-            assert (uin_hdlc.Tx == 1'b0);
+        assert (uin_hdlc.Tx == 1'b1) else begin
+            $display("FAIL: Wrong flag bit 7");
+        @(posedge uin_hdlc.Clk);
+        assert (uin_hdlc.Tx == 1'b0) else begin
+            $display("FAIL: Wrong flag bit 8");
         $display("Flag received");
 
         // Check data
@@ -648,7 +656,6 @@ program testPr_hdlc(
         $display("Tx_ValidFrame received");
 
         // Wait an additional 2 clock cycles so the next one is the beginning of the flag
-        @(posedge uin_hdlc.Clk);
         @(posedge uin_hdlc.Clk);
 
 	    if(Abort)
