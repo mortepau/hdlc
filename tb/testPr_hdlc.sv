@@ -334,15 +334,15 @@ program testPr_hdlc(
 	    Init();
 
 	    // Receive: Size, Abort, FCSerr, NonByteAligned, Overflow, Drop, SkipRead
-	    Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive(126, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive(122, 1, 0, 0, 0, 0, 0); // Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
+	    // Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
+	    // Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
+	    // Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    // Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
+	    // Receive(126, 0, 0, 0, 0, 0, 0); // Normal
+	    // Receive(122, 1, 0, 0, 0, 0, 0); // Abort
+	    // Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    // Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
+	    // Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
 
         //Transmit: Size, Abort, Overflow
         Transmit( 10, 0, 0); // Normal
@@ -638,15 +638,15 @@ program testPr_hdlc(
         end
         $display("Finished Tx stimuli");
 
+        // Start transmission
+        WriteAddress(TXSC, 8'h02);
+        $display("Started transmission");
+
         // Wait for Tx_Done to be asserted
         $display("Waiting for Tx_Done");
         if (uin_hdlc.Tx_Done == 1'b0)
             @(posedge uin_hdlc.Tx_Done);
         $display("Tx_Done received");
-
-        // Start transmission
-        WriteAddress(TXSC, 8'h02);
-        $display("Started transmission");
 
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, NewSize);
