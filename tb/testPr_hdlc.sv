@@ -636,8 +636,7 @@ program testPr_hdlc(
         $display("Increased from %d to %d", Size*8 + 2, NewSize);
 
         // Wait for Tx_Done to be asserted
-        while (!ReadData[0])
-            ReadAddress(TXSC, ReadData);
+        @(posedge uin_hdlc.Tx_Done);
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
