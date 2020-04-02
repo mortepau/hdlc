@@ -560,14 +560,14 @@ program testPr_hdlc(
                     newSize++;
 
                     prevData = prevData >> 1;
-                    checkZero[4] = 1'b0;
+                    prevData[4] = 1'b0;
                 end
 
                 fData[newSize] = Data[i][j];
                 newSize++;
 
                 prevData = prevData >> 1;
-                checkZero[4] = Data[i][j];
+                prevData[4] = Data[i][j];
             end
         end
 
