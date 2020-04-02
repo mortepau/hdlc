@@ -518,7 +518,7 @@ program testPr_hdlc(
 	    end
 	endtask
 
-    task MakeTxStimulus(logic [127:0][7:0] Data, int Size, logic [3:0][7:0] OverflowData, int OverflowSize);
+    task MakeTxStimulus(input logic [127:0][7:0] Data, input int Size, input logic [3:0][7:0] OverflowData, input int OverflowSize);
         for (int i = 0; i < Size; i++) begin
             WriteAddress(TXBUFF, Data[i]);
         end         
@@ -526,6 +526,74 @@ program testPr_hdlc(
         for (int i = 0; i < OverflowSize; i++) begin
             WriteAddress(TXBUFF, OverflowData[i]);
         end
+    endtask
+
+    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize);
+        logic [4:0] prevData;
+
+        checkZero = '0;
+        newSize = 0;
+
+        // Insert flag
+        fData[newSize] = 1'b0;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b0;
+        newSize++;
+
+        // Insert zeros if necessary
+        for (int i = 0; i < Size; i++) begin
+            for (int j = 0; j < 8; j++) begin
+                if (&prevData) begin
+                    fData[newSize] = 1'b0;
+                    newSize++;
+
+                    prevData = prevData >> 1;
+                    checkZero[4] = 1'b0;
+                end
+
+                fData[newSize] = Data[i][j];
+                newSize++;
+
+                prevData = prevData >> 1;
+                checkZero[4] = Data[i][j];
+            end
+        end
+
+        // Append FCS's
+        fData[newSize+7+:8] = data[size];
+        newSize += 8;
+        fData[newSize+7+:8] = data[size+1];
+        newSize += 8;
+
+        // Insert flag
+        fData[newSize] = 1'b0;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b1;
+        newSize++;
+        fData[newSize] = 1'b0;
+        newSize++;
     endtask
 
 	task Receive(int Size, int Abort, int FCSerr, int NonByteAligned, int Overflow, int Drop, int SkipRead);
@@ -612,10 +680,9 @@ program testPr_hdlc(
 
 	task Transmit(int Size, int Abort, int Overflow);
 	    logic [125:0][7:0] TransmitData;
-	    logic       [15:0] FCSBytes;
 	    logic   [2:0][7:0] OverflowData;
-        logic [1224:0]     fData;
-        logic        [7:0] ReadData;
+	    logic       [15:0] FCSBytes;
+        logic     [1224:0] fData;
         int                NewSize;
 	    string msg;
 
@@ -641,7 +708,7 @@ program testPr_hdlc(
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize);
-        $display("Increased from %4d to %4d", Size*8 + 2, NewSize);
+        $display("Increased from %4d to %4d", (Size + 2)*8, NewSize);
 
         $display("Making Tx stimuli");
 	    if(Overflow) begin
@@ -665,6 +732,7 @@ program testPr_hdlc(
 
         // Wait an additional 2 clock cycles so the next one is the beginning of the flag
         @(posedge uin_hdlc.Clk);
+        @(posedge uin_hdlc.Clk);
 
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, NewSize);
@@ -675,39 +743,11 @@ program testPr_hdlc(
 
         #5000ns;
 
-        uin_hdlc.Rst = 1'b0;
-        #100ns;
-        uin_hdlc.Rst = 1'b1;
-        #100ns;
-    endtask
-
-    task MakeTxOutput(logic [127:0][7:0] data, int size, output logic [128*8 + 200:0] fData, output int newSize);
-        logic [4:0] checkZero;
-        logic insertZero;
-
-        checkZero = 5'b0;
-        newSize = 0;
-
-        // Insert zeros if necessary
-        for (int i = 0; i < size; i++) begin
-            for (int j = 0; j < 8; j++) begin
-                insertZero = &checkZero;
-                if (insertZero) begin
-                    fData[newSize] = 1'b0;
-                    newSize++;
-                end
-                fData[newSize] = data[i][j];
-                newSize++;
-                checkZero = checkZero >> 1;
-                checkZero[4] = data[i][j];
-            end
-        end
-
-        // Append FCS's
-        fData[newSize+7+:8] = data[size];
-        newSize += 8;
-        fData[newSize+7+:8] = data[size+1];
-        newSize += 8;
+        @(posedge uin_hdlc.Clk);
+            uin_hdlc.Rst = 1'b0;
+        @(posedge uin_hdlc.Clk);
+            uin_hdlc.Rst = 1'b1;
+        @(posedge uin_hdlc.Clk);
     endtask
 
 	task GenerateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
