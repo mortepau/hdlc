@@ -255,10 +255,12 @@ program testPr_hdlc(
         
         // Check flag
         for (int f = 0; f < 8; f++) begin
-            @(posedge uin_hdlc.Clk);
-                assert(uin_hdlc.Tx == flag[f]) else begin
-                    $display("Flag bit %1d is wrong", f);
-                end
+            if (f != 0) begin
+                @(posedge uin_hdlc.Clk);
+            end
+            assert(uin_hdlc.Tx == flag[f]) else begin
+                $display("Flag bit %1d is wrong", f);
+            end
         end
         $display("Start flag received");
 
@@ -330,7 +332,7 @@ program testPr_hdlc(
         //Transmit(122, 1, 0); // Abort
         Transmit( 40, 0, 0); // Normal
         Transmit(126, 0, 0); // Normal
-        //Transmit(126, 0, 1); // Overflow
+        Transmit(126, 0, 1); // Overflow
         Transmit(122, 0, 0); // Normal
 
 	    $display("*************************************************************");
@@ -655,13 +657,14 @@ program testPr_hdlc(
         $display("Started transmission");
 
         // Wait for Tx_Done to be asserted
-        $display("Waiting for Tx_ValidFrame");
-        @(posedge uin_hdlc.Tx_ValidFrame);
-        $display("Tx_ValidFrame received");
+        /* $display("Waiting for Tx_ValidFrame"); */
+        /* @(posedge uin_hdlc.Tx_ValidFrame); */
+        /* $display("Tx_ValidFrame received"); */
 
         // Wait an additional 2 clock cycles so the next one is the beginning of the flag
-        @(posedge uin_hdlc.Clk);
-        @(posedge uin_hdlc.Clk);
+        /* @(posedge uin_hdlc.Clk); */
+        /* @(posedge uin_hdlc.Clk); */
+        @(negedge uin_hdlc.Tx);
 
 	    if(Abort)
 	        VerifyAbortTransmit(fData, NewSize);
