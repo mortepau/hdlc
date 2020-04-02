@@ -274,7 +274,7 @@ program testPr_hdlc(
         // Check data
         for (int i = 0; i < size; i++) begin
             @(posedge uin_hdlc.Clk);
-                $display("bit %4d : fdata[%d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
+                $display("bit %4d : fdata[%1d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
                     $display("FAIL: Tx is not equal expected output");
                 end
@@ -625,7 +625,7 @@ program testPr_hdlc(
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize);
-        $display("Increased from %d to %d", Size*8 + 2, NewSize);
+        $display("Increased from %4d to %4d", Size*8 + 2, NewSize);
 
         $display("Making Tx stimuli");
 	    if(Overflow) begin
@@ -643,10 +643,13 @@ program testPr_hdlc(
         $display("Started transmission");
 
         // Wait for Tx_Done to be asserted
-        $display("Waiting for Tx_Done");
-        if (uin_hdlc.Tx_Done == 1'b0)
-            @(posedge uin_hdlc.Tx_Done);
-        $display("Tx_Done received");
+        $display("Waiting for Tx_ValidFrame");
+        @(posedge uin_hdlc.Tx_ValidFrame);
+        $display("Tx_ValidFrame received");
+
+        // Wait an additional 2 clock cycles so the next one is the beginning of the flag
+        @(posedge uin_hdlc.Clk);
+        @(posedge uin_hdlc.Clk);
 
 	    if(Abort)
 	        VerifyAbortTransmit(TransmitData, NewSize);
