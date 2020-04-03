@@ -335,7 +335,8 @@ program testPr_hdlc(
         // Abort the frame
         WriteAddress(TXSC, 8'h04);
 
-        // Wait a clock cycle
+        // Wait 2 clock cycles
+        @(posedge uin_hdlc.Clk);
         @(posedge uin_hdlc.Clk);
 
         // Check that Tx_AbortedTrans is asserted
