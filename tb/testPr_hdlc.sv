@@ -247,8 +247,8 @@ program testPr_hdlc(
 	endtask
 
 
-    task VerifyNormalTransmit(logic [128*8+200:0] fdata, int size);
-        logic [15:0] FCSBytes;
+    task VerifyNormalTransmit(logic [128*8+200:0] fData, int Size, logic [2*8 + 3:0] fFCSData, int FCSSize);
+        logic [18:0] FCSBytes; // Takes potential zero insertions into consideration
         logic  [7:0] flag;
         
         flag = 8'b0111_1110;
@@ -265,20 +265,20 @@ program testPr_hdlc(
         end
 
         // Check data
-        for (int i = 0; i < size - 16; i++) begin
+        for (int i = 0; i < Size; i++) begin
             @(posedge uin_hdlc.Clk);
-                assert (fdata[i] == uin_hdlc.Tx) else begin
+                assert (fData[i] == uin_hdlc.Tx) else begin
                     $error("FAIL: Tx is not equal expected output");
                     TbErrorCnt++;
                 end
         end
 
         // Check FCS bytes
-        for (int i = 0; i < 16; i++) begin
+        for (int i = 0; i < FCSSize; i++) begin
             @(posedge uin_hdlc.Clk);
                 FCSBytes[i] = uin_hdlc.Tx;
         end
-        assert(FCSBytes == fdata[size-16+:16]) else begin
+        assert(FCSBytes[FCSSize-1:0] == fFCSData) else begin
             $error("FAIL: FCSBytes not correct");
             TbErrorCnt++;
         end
@@ -494,11 +494,12 @@ program testPr_hdlc(
         end
     endtask
 
-    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize);
+    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output logic [2*8 + 3:0] fFCSData, output int FCSSize);
         logic [4:0] prevData;
 
         prevData = '0;
         newSize = 0;
+        FCSSize = 0;
 
         // Insert zeros if necessary
         for (int i = 0; i < Size; i++) begin
@@ -520,10 +521,23 @@ program testPr_hdlc(
         end
 
         // Append FCS's
-        fData[newSize+7+:8] = Data[Size];
-        newSize += 8;
-        fData[newSize+7+:8] = Data[Size+1];
-        newSize += 8;
+        for (int i = 0; i < 2; i++) begin
+            for (int j = 0; j < 8; j++) begin
+                if (&prevData) begin
+                    fFCSData[FCSSize] = 1'b0;
+                    FCSSize++;
+
+                    prevData = prevData >> 1;
+                    prevData[4] = 1'b0;
+                end
+
+                fFCSData[FCSSize] = Data[Size + i][j];
+                FCSSize++;
+
+                prevData = prevData >> 1;
+                prevData[4] = Data[Size + i][j];
+            end
+        end
     endtask
 
 	task Receive(int Size, int Abort, int FCSerr, int NonByteAligned, int Overflow, int Drop, int SkipRead);
@@ -613,7 +627,9 @@ program testPr_hdlc(
 	    logic   [2:0][7:0] OverflowData;
 	    logic       [15:0] FCSBytes;
         logic     [1224:0] fData;
+        logic       [18:0] fFCSData;
         int                NewSize;
+        int                FCSSize;
 	    string msg;
 
 	    if(Abort)
@@ -637,7 +653,7 @@ program testPr_hdlc(
 	    TransmitData[Size+1]   = FCSBytes[15:8];
 	  
         //Modify data so that it contains necessary zeros and is flattened
-        MakeTxOutput(TransmitData, Size, fData, NewSize);
+        MakeTxOutput(TransmitData, Size, fData, NewSize, fFCSData, FCSSize);
 
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
@@ -658,7 +674,7 @@ program testPr_hdlc(
 	    else if(Overflow)
 	        VerifyOverflowTransmit(fData, NewSize, 3);
 	    else
-	        VerifyNormalTransmit(fData, NewSize);
+	        VerifyNormalTransmit(fData, NewSize, fFCSData, FCSSize);
 
         #5000ns;
 
