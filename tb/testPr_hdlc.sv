@@ -347,6 +347,10 @@ program testPr_hdlc(
             TbErrorCnt++;
         end
 
+        // Wait 2 clock cycles for Tx_AbortFrame to propagate
+        @(posedge uin_hdlc.Clk);
+        @(posedge uin_hdlc.Clk);
+
         // Check that Tx is set back to idle
         repeat(10) begin
             @(posedge uin_hdlc.Clk);
