@@ -347,12 +347,11 @@ program testPr_hdlc(
         // Check that Tx is set back to idle
         repeat(10) begin
             @(posedge uin_hdlc.Clk);
-                assert (uin_hdlc.Tx = 1'b1) else begin
+                assert (uin_hdlc.Tx == 1'b1) else begin
                     $error("FAIL: Tx != 1'b1 after abort");
                     TbErrorCnt++;
                 end
         end
-
     endtask
 
 	/****************************************************************************
