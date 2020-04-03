@@ -340,7 +340,7 @@ program testPr_hdlc(
 
         // Check that Tx_AbortedTrans is asserted
         ReadAddress(TXSC, ReadData);
-        assert (ReadData == 8'h08) begin
+        assert (ReadData == 8'h09) begin
             $display("PASS: Tx_AbortedTrans asserted");
         end else begin
             $error("FAIL: Tx_AbortedTrans was not asserted");
