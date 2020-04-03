@@ -247,7 +247,7 @@ program testPr_hdlc(
 	endtask
 
 
-    task VerifyNormalTransmit(logic [128*8+204:0] fData, int Size, int FCSSize);
+    task VerifyNonAbortTransmit(logic [128*8+204:0] fData, int Size, int FCSSize);
         // Using +3 as this takes potential zero insertions into consideration
         // floor(16/5)=3
         logic [15+3:0] FCSBytes,
@@ -303,7 +303,56 @@ program testPr_hdlc(
     endtask
 
     task VerifyAbortTransmit(logic [128*8+204:0] fData, int Size);
-        $display("VerifyAbortTransmit");
+        // Using +3 as this takes potential zero insertions into consideration
+        // floor(16/5)=3
+        logic [15+3:0] FCSBytes,
+                       FCSBytes_calc;
+        logic  [7:0] flag;
+        
+        flag = 8'b0111_1110;
+        
+        // Check flag
+        for (int f = 0; f < 8; f++) begin
+            if (f != 0) begin
+                @(posedge uin_hdlc.Clk);
+            end
+            assert(uin_hdlc.Tx == flag[f]) else begin
+                $error("FAIL: Flag bit %1d is wrong", f);
+                TbErrorCnt++;
+            end
+        end
+
+        // Check data
+        for (int i = 0; i < Size / 2; i++) begin
+            @(posedge uin_hdlc.Clk);
+                assert (fData[i] == uin_hdlc.Tx) else begin
+                    $error("FAIL: Tx is not equal expected output");
+                    TbErrorCnt++;
+                end
+        end
+
+        // Abort the frame
+        WriteAddress(TXSC, 8'h04);
+
+        // Check that Tx_AbortedTrans is asserted
+        logic [7:0] ReadData;
+        ReadAddress(TXSC, ReadData);
+        assert (ReadData == 8'h08) begin
+            $display("PASS: Tx_AbortedTrans asserted");
+        end else begin
+            $error("FAIL: Tx_AbortedTrans was not asserted");
+            TbErrorCnt++;
+        end
+
+        // Check that Tx is set back to idle
+        repeat(10) begin
+            @(posedge uin_hdlc.Clk);
+                assert (uin_hdlc.Tx = 1'b1) else begin
+                    $error("FAIL: Tx != 1'b1 after abort");
+                    TbErrorCnt++;
+                end
+        end
+
     endtask
 
 	/****************************************************************************
@@ -674,8 +723,11 @@ program testPr_hdlc(
         if (Overflow) begin
             logic [7:0] ReadData;
             ReadAddress(TXSC, ReadData);
-            assert (ReadData == 8'h10) else begin
-                $error("Tx_Overflow not asserted");
+            assert (ReadData == 8'h10) begin
+                $display("PASS: Tx_Overflow asserted"); 
+            end else begin
+                $error("FAIL: Tx_Overflow not asserted");
+                TbErrorCnt++;
             end
         end
 
@@ -688,7 +740,7 @@ program testPr_hdlc(
 	    if(Abort)
 	        VerifyAbortTransmit(fData, NewSize);
 	    else
-	        VerifyNormalTransmit(fData, NewSize, FCSSize);
+	        VerifyNonAbortTransmit(fData, NewSize, FCSSize);
 
         #5000ns;
 
