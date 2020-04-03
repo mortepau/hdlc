@@ -276,10 +276,10 @@ program testPr_hdlc(
         // Check FCS bytes
         for (int i = 0; i < FCSSize; i++) begin
             @(posedge uin_hdlc.Clk);
-                FCSBytes[i] = uin_hdlc.Tx;
+                FCSBytes[FCSSize - 1 - i] = uin_hdlc.Tx;
         end
         assert(FCSBytes == fFCSData) else begin
-            $error("FAIL: FCSBytes not correct, 0x%5h != 0x%5h", FCSBytes, fFCSData);
+            $error("FAIL: FCSBytes not correct, 0x%4h != 0x%5h", FCSBytes, fFCSData);
             TbErrorCnt++;
         end
 
