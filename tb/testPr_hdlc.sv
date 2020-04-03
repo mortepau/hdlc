@@ -678,7 +678,7 @@ program testPr_hdlc(
 	    else if(Overflow)
 	        VerifyOverflowTransmit(fData, NewSize, 3);
 	    else
-	        VerifyNormalTransmit(fData, NewSize, fFCSData, FCSSize);
+	        VerifyNormalTransmit(fData, NewSize, FCSSize);
 
         #5000ns;
 
