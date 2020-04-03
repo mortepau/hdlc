@@ -260,7 +260,7 @@ program testPr_hdlc(
             end
             assert(uin_hdlc.Tx == flag[f]) else begin
                 $display("Flag bit %1d is wrong", f);
-                ErrCntAssertions++;
+                TbErrorCnt++;
             end
         end
         $display("Start flag received");
@@ -271,7 +271,7 @@ program testPr_hdlc(
                 $display("bit %4d : fdata[%1d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
                     $display("FAIL: Tx is not equal expected output");
-                    ErrCntAssertions++;
+                    TbErrorCnt++;
                 end
         end
         $display("All data received");
@@ -283,7 +283,7 @@ program testPr_hdlc(
         end
         assert(FCSBytes == fdata[size-16+:16]) else begin
             $display("FAIL: FCSBytes not correct");
-            ErrCntAssertions++;
+            TbErrorCnt++;
         end
 
         $display("All bytes checked");
@@ -293,7 +293,7 @@ program testPr_hdlc(
             @(posedge uin_hdlc.Clk);
                 assert(uin_hdlc.Tx == flag[f]) else begin
                     $display("Flag bit %1d is wrong", f);
-                    ErrCntAssertions++;
+                    TbErrorCnt++;
                 end
         end
         $display("End flag received");
