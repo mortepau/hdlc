@@ -523,10 +523,10 @@ program testPr_hdlc(
                 end
 
                 if (i <= Size) begin
-                    fData[newSize] = data[i][j];
+                    fData[newSize] = Data[i][j];
                     newSize++;
                 end else begin
-                    fFCSData[FCSSize] = data[i][j];
+                    fFCSData[FCSSize] = Data[i][j];
                     FCSSize++;
                 end
 
@@ -534,6 +534,7 @@ program testPr_hdlc(
                 prevData[4] = Data[i][j];
             end
         end
+
     endtask
 
 	task Receive(int Size, int Abort, int FCSerr, int NonByteAligned, int Overflow, int Drop, int SkipRead);
