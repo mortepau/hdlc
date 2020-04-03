@@ -652,6 +652,9 @@ program testPr_hdlc(
 	    for (int i = 0; i < Size; i++) begin
 	        TransmitData[i] = $urandom;
 	    end
+        TransmitData[Size] = '0;
+        TransmitData[Size + 1] = '0;
+
 
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
@@ -661,7 +664,6 @@ program testPr_hdlc(
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize, fFCSData, FCSSize);
-        $display("FCSBytes = 0b%16b", FCSBytes);
         $display("Flattened FCSBytes = 0b%b", fFCSData);
 
 	    if(Overflow) begin
