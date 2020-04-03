@@ -274,6 +274,7 @@ program testPr_hdlc(
         end
 
         // Check FCS bytes
+        FCSBytes = '0;
         for (int i = 0; i < FCSSize; i++) begin
             @(posedge uin_hdlc.Clk);
                 FCSBytes[FCSSize - 1 - i] = uin_hdlc.Tx;
@@ -490,6 +491,7 @@ program testPr_hdlc(
         end         
         
         for (int i = 0; i < OverflowSize; i++) begin
+            $display("Wrote overflow");
             WriteAddress(TXBUFF, OverflowData[i]);
         end
     endtask
@@ -503,6 +505,7 @@ program testPr_hdlc(
 
         // Insert zeros if necessary
         fData = '0;
+        $display("Flattening data bytes");
         for (int i = 0; i < Size; i++) begin
             for (int j = 0; j < 8; j++) begin
                 if (&prevData) begin
@@ -523,6 +526,7 @@ program testPr_hdlc(
 
         // Append FCS's
         fFCSData = '0;
+        $display("Flattening FCS");
         for (int i = 0; i < 2; i++) begin
             for (int j = 0; j < 8; j++) begin
                 if (&prevData) begin
@@ -653,6 +657,7 @@ program testPr_hdlc(
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
 	    TransmitData[Size] = FCSBytes[7:0];
 	    TransmitData[Size+1]   = FCSBytes[15:8];
+        $display("FCSBytes = 0b%16b", FCSBytes);
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize, fFCSData, FCSSize);
@@ -663,6 +668,7 @@ program testPr_hdlc(
 	        OverflowData[2] = 8'hCC;
             MakeTxStimulus(TransmitData, Size, OverflowData, 3);
         end else begin
+            $display("Creating stimuli");
             MakeTxStimulus(TransmitData, Size, OverflowData, 0);
         end
 
