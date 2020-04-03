@@ -278,8 +278,8 @@ program testPr_hdlc(
             @(posedge uin_hdlc.Clk);
                 FCSBytes[i] = uin_hdlc.Tx;
         end
-        assert(FCSBytes[FCSSize-1:0] == fFCSData) else begin
-            $error("FAIL: FCSBytes not correct");
+        assert(FCSBytes == fFCSData) else begin
+            $error("FAIL: FCSBytes not correct, 0x%5h != 0x%5h", FCSBytes, fFCSData);
             TbErrorCnt++;
         end
 
@@ -502,6 +502,7 @@ program testPr_hdlc(
         FCSSize = 0;
 
         // Insert zeros if necessary
+        fData = '0;
         for (int i = 0; i < Size; i++) begin
             for (int j = 0; j < 8; j++) begin
                 if (&prevData) begin
@@ -521,6 +522,7 @@ program testPr_hdlc(
         end
 
         // Append FCS's
+        fFCSData = '0;
         for (int i = 0; i < 2; i++) begin
             for (int j = 0; j < 8; j++) begin
                 if (&prevData) begin
@@ -679,9 +681,12 @@ program testPr_hdlc(
         #5000ns;
 
         @(posedge uin_hdlc.Clk);
-            uin_hdlc.Rst = 1'b0;
-        @(posedge uin_hdlc.Clk);
-            uin_hdlc.Rst = 1'b1;
+        uin_hdlc.Rst = 1'b0;
+
+        repeat(100)
+            @(posedge uin_hdlc.Clk);
+            
+        uin_hdlc.Rst = 1'b1;
         @(posedge uin_hdlc.Clk);
     endtask
 
