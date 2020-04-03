@@ -245,7 +245,7 @@ module assertions_hdlc (
 	// 18. Tx_Full should be asserted after writing 126 or more bytes to the TX buffer (overflow)
 	// Not checked
 	property p_Tx_Full;
-        @(posedge Clk) disable iff (!Rst) $fell(Tx_Done) ##0 (($rose(Tx_WrBuff) [->1]) ##[127:$]) |-> Tx_Full;
+        @(posedge Clk) disable iff (!Rst) $fell(Tx_Done) ##0 (($rose(Tx_WrBuff) [->1]) [*127:$]) |-> Tx_Full;
 	endproperty
 
 	/********************************************

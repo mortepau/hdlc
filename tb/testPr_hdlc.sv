@@ -300,6 +300,7 @@ program testPr_hdlc(
     endtask
 
     task VerifyOverflowTransmit(logic [127:0][7:0] data, int size, int overflowSize);
+        #1000;
         $display("VerifyOverflowTransmit");
     endtask
 
