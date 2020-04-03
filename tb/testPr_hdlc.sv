@@ -247,8 +247,9 @@ program testPr_hdlc(
 	endtask
 
 
-    task VerifyNormalTransmit(logic [128*8+200:0] fData, int Size, logic [2*8 + 3:0] fFCSData, int FCSSize);
+    task VerifyNormalTransmit(logic [128*8+200:0] fData, int Size, int FCSSize);
         logic [18:0] FCSBytes; // Takes potential zero insertions into consideration
+        logic [18:0] FCSBytes_calc;
         logic  [7:0] flag;
         
         flag = 8'b0111_1110;
@@ -276,11 +277,13 @@ program testPr_hdlc(
         // Check FCS bytes
         FCSBytes = '0;
         for (int i = 0; i < FCSSize; i++) begin
-            @(posedge uin_hdlc.Clk);
-                FCSBytes[FCSSize - 1 - i] = uin_hdlc.Tx;
+            @(posedge uin_hdlc.Clk) begin
+                FCSBytes[i] = uin_hdlc.Tx;
+                FCSBytes_calc[i] = fData[Size + i];
+            end
         end
-        assert(FCSBytes == fFCSData) else begin
-            $error("FAIL: FCSBytes not correct, 0x%4h != 0x%5h", FCSBytes, fFCSData);
+        assert(FCSBytes == FCSBytes_calc) else begin
+            $error("FAIL: FCSBytes not correct, 0x%4h != 0x%5h", FCSBytes, FCSBytes_calc);
             TbErrorCnt++;
         end
 
@@ -496,7 +499,7 @@ program testPr_hdlc(
         end
     endtask
 
-    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output logic [2*8 + 3:0] fFCSData, output int FCSSize);
+    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output int FCSSize);
         logic [4:0] prevData;
 
         prevData = '0;
@@ -505,7 +508,6 @@ program testPr_hdlc(
 
         // Insert zeros if necessary
         fData = '0;
-        fFCSData = '0;
         $display("Flattening data bytes");
         for (int i = 0; i < Size + 2; i++) begin
             for (int j = 0; j < 8; j++) begin
@@ -514,7 +516,7 @@ program testPr_hdlc(
                         fData[newSize] = 1'b0;
                         newSize++;
                     end else begin
-                        fFCSData[FCSSize] = 1'b0;
+                        fData[newSize + FCSSize] = 1'b0;
                         FCSSize++;
                     end
 
@@ -526,7 +528,7 @@ program testPr_hdlc(
                     fData[newSize] = Data[i][j];
                     newSize++;
                 end else begin
-                    fFCSData[FCSSize] = Data[i][j];
+                    fData[newSize + FCSSize] = Data[i][j];
                     FCSSize++;
                 end
 
@@ -620,11 +622,10 @@ program testPr_hdlc(
 	endtask
 
 	task Transmit(int Size, int Abort, int Overflow);
-	    logic [125:0][7:0] TransmitData;
+	    logic [127:0][7:0] TransmitData;
 	    logic   [2:0][7:0] OverflowData;
 	    logic       [15:0] FCSBytes;
-        logic     [1224:0] fData;
-        logic       [18:0] fFCSData;
+        logic     [1228:0] fData;
         int                NewSize;
         int                FCSSize;
 	    string msg;
@@ -654,7 +655,7 @@ program testPr_hdlc(
         $display("FCSBytes = 0b%16b", FCSBytes);
 	  
         //Modify data so that it contains necessary zeros and is flattened
-        MakeTxOutput(TransmitData, Size, fData, NewSize, fFCSData, FCSSize);
+        MakeTxOutput(TransmitData, Size, fData, NewSize, FCSSize);
         $display("Flattened FCSBytes = 0b%b", fFCSData);
 
 	    if(Overflow) begin
