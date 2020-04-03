@@ -259,22 +259,19 @@ program testPr_hdlc(
                 @(posedge uin_hdlc.Clk);
             end
             assert(uin_hdlc.Tx == flag[f]) else begin
-                $display("Flag bit %1d is wrong", f);
+                $error("Flag bit %1d is wrong", f);
                 TbErrorCnt++;
             end
         end
-        $display("Start flag received");
 
         // Check data
         for (int i = 0; i < size - 16; i++) begin
             @(posedge uin_hdlc.Clk);
-                $display("bit %4d : fdata[%1d]=%d, Tx=%d", i, i, fdata[i], uin_hdlc.Tx);
                 assert (fdata[i] == uin_hdlc.Tx) else begin
-                    $display("FAIL: Tx is not equal expected output");
+                    $error("FAIL: Tx is not equal expected output");
                     TbErrorCnt++;
                 end
         end
-        $display("All data received");
 
         // Check FCS bytes
         for (int i = 0; i < 16; i++) begin
@@ -282,21 +279,18 @@ program testPr_hdlc(
                 FCSBytes[i] = fdata[size+i];
         end
         assert(FCSBytes == fdata[size-16+:16]) else begin
-            $display("FAIL: FCSBytes not correct");
+            $error("FAIL: FCSBytes not correct");
             TbErrorCnt++;
         end
-
-        $display("All bytes checked");
 
         // Check flag
         for (int f = 0; f < 8; f++) begin
             @(posedge uin_hdlc.Clk);
                 assert(uin_hdlc.Tx == flag[f]) else begin
-                    $display("Flag bit %1d is wrong", f);
+                    $error("Flag bit %1d is wrong", f);
                     TbErrorCnt++;
                 end
         end
-        $display("End flag received");
     endtask
 
     task VerifyAbortTransmit(logic [127:0][7:0] data, int size);
@@ -644,9 +638,7 @@ program testPr_hdlc(
 	  
         //Modify data so that it contains necessary zeros and is flattened
         MakeTxOutput(TransmitData, Size, fData, NewSize);
-        $display("Increased from %4d to %4d", (Size + 2)*8, NewSize);
 
-        $display("Making Tx stimuli");
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
 	        OverflowData[1] = 8'hBB;
@@ -655,20 +647,10 @@ program testPr_hdlc(
         end else begin
             MakeTxStimulus(TransmitData, Size, OverflowData, 0);
         end
-        $display("Finished Tx stimuli");
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
-        $display("Started transmission");
 
-        // Wait for Tx_Done to be asserted
-        /* $display("Waiting for Tx_ValidFrame"); */
-        /* @(posedge uin_hdlc.Tx_ValidFrame); */
-        /* $display("Tx_ValidFrame received"); */
-
-        // Wait an additional 2 clock cycles so the next one is the beginning of the flag
-        /* @(posedge uin_hdlc.Clk); */
-        /* @(posedge uin_hdlc.Clk); */
         @(negedge uin_hdlc.Tx);
 
 	    if(Abort)

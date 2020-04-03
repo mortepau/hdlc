@@ -171,7 +171,7 @@ module assertions_hdlc (
 	// 6. Zero insertion and removal of transparent transmission.
     // Not checked
 	property p_Tx_InsertZero;
-        @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:20] Tx_zero;
+        @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:22] Tx_zero;
 	endproperty
 
 	property p_Rx_RemoveZero;
