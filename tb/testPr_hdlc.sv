@@ -307,7 +307,8 @@ program testPr_hdlc(
         // floor(16/5)=3
         logic [15+3:0] FCSBytes,
                        FCSBytes_calc;
-        logic  [7:0] flag;
+        logic  [7:0] flag,
+                     ReadData;
         
         flag = 8'b0111_1110;
         
@@ -335,7 +336,6 @@ program testPr_hdlc(
         WriteAddress(TXSC, 8'h04);
 
         // Check that Tx_AbortedTrans is asserted
-        logic [7:0] ReadData;
         ReadAddress(TXSC, ReadData);
         assert (ReadData == 8'h08) begin
             $display("PASS: Tx_AbortedTrans asserted");
