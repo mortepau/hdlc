@@ -276,7 +276,7 @@ program testPr_hdlc(
 
         // Check FCS bytes
         FCSBytes = '0;
-        FCSBytes_cal = '0;
+        FCSBytes_calc = '0;
         for (int i = 0; i < FCSSize; i++) begin
             @(posedge uin_hdlc.Clk) begin
                 FCSBytes[i] = uin_hdlc.Tx;
