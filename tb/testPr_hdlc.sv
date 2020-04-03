@@ -657,7 +657,7 @@ program testPr_hdlc(
 
 
 	    //Calculate FCS bits;
-	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
+	    CalculateFCSBytes(TransmitData, Size, FCSBytes);
 	    TransmitData[Size] = FCSBytes[7:0];
 	    TransmitData[Size+1]   = FCSBytes[15:8];
         $display("FCSBytes = 0b%16b", FCSBytes);
@@ -698,6 +698,19 @@ program testPr_hdlc(
             
         uin_hdlc.Rst = 1'b1;
         @(posedge uin_hdlc.Clk);
+    endtask
+
+    task CalculateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
+        FCSBytes = '0;
+        for (int i = 0; i < size; i++) begin
+            for (int j = 0; j < 8; j++) begin
+                FCSBytes[0] = data[i][j] ^ FCSBytes[15];
+                FCSBytes[1] = FCSBytes[0];
+                FCSBytes[2] = FCSBytes[1] ^ FCSBytes[15];
+                FCSBytes[14:3] = FCSBytes[13:2];
+                FCSBytes[15] = FCSBytes[14] ^ FCSBytes[15];
+            end
+        end
     endtask
 
 	task GenerateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
