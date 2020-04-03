@@ -527,7 +527,7 @@ program testPr_hdlc(
         // Append FCS's
         fFCSData = '0;
         $display("Flattening FCS");
-        for (int i = 0; i < 2; i++) begin
+        for (int i = Size; i < Size + 2; i++) begin
             for (int j = 0; j < 8; j++) begin
                 if (&prevData) begin
                     fFCSData[FCSSize] = 1'b0;
@@ -537,11 +537,11 @@ program testPr_hdlc(
                     prevData[4] = 1'b0;
                 end
 
-                fFCSData[FCSSize] = Data[Size + i][j];
+                fFCSData[FCSSize] = Data[i][j];
                 FCSSize++;
 
                 prevData = prevData >> 1;
-                prevData[4] = Data[Size + i][j];
+                prevData[4] = Data[i][j];
             end
         end
     endtask
@@ -701,16 +701,33 @@ program testPr_hdlc(
     endtask
 
     task CalculateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
-        FCSBytes = '0;
+        logic [15:0] tmp;
+        tmp = '0;
         for (int i = 0; i < size; i++) begin
             for (int j = 0; j < 8; j++) begin
-                FCSBytes[0] = data[i][j] ^ FCSBytes[15];
-                FCSBytes[1] = FCSBytes[0];
-                FCSBytes[2] = FCSBytes[1] ^ FCSBytes[15];
-                FCSBytes[14:3] = FCSBytes[13:2];
-                FCSBytes[15] = FCSBytes[14] ^ FCSBytes[15];
+                tmp[0] = data[i][j] ^ tmp[15];
+                tmp[1] = tmp[0];
+                tmp[2] = tmp[1] ^ tmp[15];
+                tmp[14:3] = tmp[13:2];
+                tmp[15] = tmp[14] ^ tmp[15];
             end
         end
+        FCSBytes[15] = tmp[0];
+        FCSBytes[14] = tmp[1];
+        FCSBytes[13] = tmp[2];
+        FCSBytes[12] = tmp[3];
+        FCSBytes[11] = tmp[4];
+        FCSBytes[10] = tmp[5];
+        FCSBytes[9] = tmp[6];
+        FCSBytes[8] = tmp[7];
+        FCSBytes[7] = tmp[8];
+        FCSBytes[6] = tmp[9];
+        FCSBytes[5] = tmp[10];
+        FCSBytes[4] = tmp[11];
+        FCSBytes[3] = tmp[12];
+        FCSBytes[2] = tmp[13];
+        FCSBytes[1] = tmp[14];
+        FCSBytes[0] = tmp[15];
     endtask
 
 	task GenerateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
