@@ -250,8 +250,8 @@ program testPr_hdlc(
     task VerifyNormalTransmit(logic [128*8+204:0] fData, int Size, int FCSSize);
         // Using +3 as this takes potential zero insertions into consideration
         // floor(16/5)=3
-        logic [15+3:0] FCSBytes; 
-                     FCSBytes_calc;
+        logic [15+3:0] FCSBytes,
+                       FCSBytes_calc;
         logic  [7:0] flag;
         
         flag = 8'b0111_1110;
@@ -671,7 +671,7 @@ program testPr_hdlc(
         end
 
         // Assert that Tx_Overflow is asserted
-        if (overflow) begin
+        if (Overflow) begin
             logic [7:0] ReadData;
             ReadAddress(TXSC, ReadData);
             assert (ReadData == 8'h10) else begin
