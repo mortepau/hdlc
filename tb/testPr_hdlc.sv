@@ -247,9 +247,11 @@ program testPr_hdlc(
 	endtask
 
 
-    task VerifyNormalTransmit(logic [128*8+200:0] fData, int Size, int FCSSize);
-        logic [18:0] FCSBytes; // Takes potential zero insertions into consideration
-        logic [18:0] FCSBytes_calc;
+    task VerifyNormalTransmit(logic [128*8+204:0] fData, int Size, int FCSSize);
+        // Using +3 as this takes potential zero insertions into consideration
+        // floor(16/5)=3
+        logic [15+3:0] FCSBytes; 
+                     FCSBytes_calc;
         logic  [7:0] flag;
         
         flag = 8'b0111_1110;
@@ -260,7 +262,7 @@ program testPr_hdlc(
                 @(posedge uin_hdlc.Clk);
             end
             assert(uin_hdlc.Tx == flag[f]) else begin
-                $error("Flag bit %1d is wrong", f);
+                $error("FAIL: Flag bit %1d is wrong", f);
                 TbErrorCnt++;
             end
         end
@@ -283,7 +285,9 @@ program testPr_hdlc(
                 FCSBytes_calc[i] = fData[Size + i];
             end
         end
-        assert(FCSBytes == FCSBytes_calc) else begin
+        assert(FCSBytes == FCSBytes_calc) begin
+            $display("PASS: FCSBytes are correct");    
+        end else begin
             $error("FAIL: FCSBytes not correct, 0x%4h != 0x%5h", FCSBytes, FCSBytes_calc);
             TbErrorCnt++;
         end
@@ -292,19 +296,14 @@ program testPr_hdlc(
         for (int f = 0; f < 8; f++) begin
             @(posedge uin_hdlc.Clk);
                 assert(uin_hdlc.Tx == flag[f]) else begin
-                    $error("Flag bit %1d is wrong", f);
+                    $error("FAIL: Flag bit %1d is wrong", f);
                     TbErrorCnt++;
                 end
         end
     endtask
 
-    task VerifyAbortTransmit(logic [127:0][7:0] data, int size);
+    task VerifyAbortTransmit(logic [128*8+204:0] fData, int Size);
         $display("VerifyAbortTransmit");
-    endtask
-
-    task VerifyOverflowTransmit(logic [127:0][7:0] data, int size, int overflowSize);
-        #1000;
-        $display("VerifyOverflowTransmit");
     endtask
 
 	/****************************************************************************
@@ -321,19 +320,19 @@ program testPr_hdlc(
 	    Init();
 
 	    // Receive: Size, Abort, FCSerr, NonByteAligned, Overflow, Drop, SkipRead
-	    // Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
-	    // Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
-	    // Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    // Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
-	    // Receive(126, 0, 0, 0, 0, 0, 0); // Normal
-	    // Receive(122, 1, 0, 0, 0, 0, 0); // Abort
-	    // Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    // Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
-	    // Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
+	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive(126, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive(122, 1, 0, 0, 0, 0, 0); // Abort
+	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
+	    Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
 
         //Transmit: Size, Abort, Overflow
         Transmit( 10, 0, 0); // Normal
-        //Transmit(122, 1, 0); // Abort
+        Transmit(122, 1, 0); // Abort
         Transmit( 40, 0, 0); // Normal
         Transmit(126, 0, 0); // Normal
         Transmit(126, 0, 1); // Overflow
@@ -490,16 +489,18 @@ program testPr_hdlc(
 	endtask
 
     task MakeTxStimulus(input logic [127:0][7:0] Data, input int Size, input logic [3:0][7:0] OverflowData, input int OverflowSize);
+        // Write data that is actually inserted
         for (int i = 0; i < Size; i++) begin
             WriteAddress(TXBUFF, Data[i]);
         end         
         
+        // Write overflow data
         for (int i = 0; i < OverflowSize; i++) begin
-            $display("Wrote overflow");
             WriteAddress(TXBUFF, OverflowData[i]);
         end
     endtask
 
+    // Flatten the 2D array of data + FCS bytes and insert zeros when 5 consequent 1's 
     task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output int FCSSize);
         logic [4:0] prevData;
 
@@ -509,9 +510,9 @@ program testPr_hdlc(
 
         // Insert zeros if necessary
         fData = '0;
-        $display("Flattening data bytes");
         for (int i = 0; i < Size + 2; i++) begin
             for (int j = 0; j < 8; j++) begin
+                // If 5 1's in a row
                 if (&prevData) begin
                     if (i <= Size) begin
                         fData[newSize] = 1'b0;
@@ -642,20 +643,22 @@ program testPr_hdlc(
 	    $display("%t - Starting task Transmit %s", $time, msg);
 	    $display("*************************************************************");
 
+        // Generate random data
 	    for (int i = 0; i < Size; i++) begin
 	        TransmitData[i] = $urandom;
 	    end
+        // Set FCS bytes to 0
         TransmitData[Size] = '0;
         TransmitData[Size + 1] = '0;
 
 
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(TransmitData, Size, FCSBytes);
+        // Insert the updated FCS bytes
 	    TransmitData[Size] = FCSBytes[7:0];
 	    TransmitData[Size+1]   = FCSBytes[15:8];
-        $display("FCSBytes = 0b%16b", FCSBytes);
 	  
-        //Modify data so that it contains necessary zeros and is flattened
+        // Flatten data and insert zeros
         MakeTxOutput(TransmitData, Size, fData, NewSize, FCSSize);
 
 	    if(Overflow) begin
@@ -664,19 +667,26 @@ program testPr_hdlc(
 	        OverflowData[2] = 8'hCC;
             MakeTxStimulus(TransmitData, Size, OverflowData, 3);
         end else begin
-            $display("Creating stimuli");
             MakeTxStimulus(TransmitData, Size, OverflowData, 0);
+        end
+
+        // Assert that Tx_Overflow is asserted
+        if (overflow) begin
+            logic [7:0] ReadData;
+            ReadAddress(TXSC, ReadData);
+            assert (ReadData == 8'h10) else begin
+                $error("Tx_Overflow not asserted");
+            end
         end
 
         // Start transmission
         WriteAddress(TXSC, 8'h02);
 
+        // Wait for the beginning of the first flag
         @(negedge uin_hdlc.Tx);
 
 	    if(Abort)
 	        VerifyAbortTransmit(fData, NewSize);
-	    else if(Overflow)
-	        VerifyOverflowTransmit(fData, NewSize, 3);
 	    else
 	        VerifyNormalTransmit(fData, NewSize, FCSSize);
 
@@ -691,36 +701,6 @@ program testPr_hdlc(
         uin_hdlc.Rst = 1'b1;
         @(posedge uin_hdlc.Clk);
     endtask
-
-    /* task CalculateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes); */
-    /*     logic [15:0] tmp; */
-    /*     tmp = '0; */
-    /*     for (int i = 0; i < size + 2; i++) begin */
-    /*         for (int j = 0; j < 8; j++) begin */
-    /*             tmp[0] = data[i][j] ^ tmp[15]; */
-    /*             tmp[1] = tmp[0]; */
-    /*             tmp[2] = tmp[1] ^ tmp[15]; */
-    /*             tmp[14:3] = tmp[13:2]; */
-    /*             tmp[15] = tmp[14] ^ tmp[15]; */
-    /*         end */
-    /*     end */
-    /*     FCSBytes[15] = tmp[0]; */
-    /*     FCSBytes[14] = tmp[1]; */
-    /*     FCSBytes[13] = tmp[2]; */
-    /*     FCSBytes[12] = tmp[3]; */
-    /*     FCSBytes[11] = tmp[4]; */
-    /*     FCSBytes[10] = tmp[5]; */
-    /*     FCSBytes[9] = tmp[6]; */
-    /*     FCSBytes[8] = tmp[7]; */
-    /*     FCSBytes[7] = tmp[8]; */
-    /*     FCSBytes[6] = tmp[9]; */
-    /*     FCSBytes[5] = tmp[10]; */
-    /*     FCSBytes[4] = tmp[11]; */
-    /*     FCSBytes[3] = tmp[12]; */
-    /*     FCSBytes[2] = tmp[13]; */
-    /*     FCSBytes[1] = tmp[14]; */
-    /*     FCSBytes[0] = tmp[15]; */
-    /* endtask */
 
 	task GenerateFCSBytes(logic [127:0][7:0] data, int size, output logic[15:0] FCSBytes);
 	    logic [23:0] CheckReg;
