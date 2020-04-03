@@ -187,7 +187,7 @@ module assertions_hdlc (
 
 	// 8. Abort pattern generation and checking.
 	property p_Tx_AbortPattern;
-	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##3 Tx_abort;
+	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##4 Tx_abort;
 	endproperty
 
 	property p_Rx_AbortPattern;
