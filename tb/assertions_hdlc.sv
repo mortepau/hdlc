@@ -160,7 +160,7 @@ module assertions_hdlc (
 
 	// 5. Start and end of frame pattern generation.
 	property p_Tx_FramePattern;
-	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && !$past(Tx_AbortFrame, 2) |-> Tx_flag;
+	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && !$past(Tx_AbortFrame, 2) |=> Tx_flag;
 	endproperty
 
 	property p_Rx_FramePattern;
