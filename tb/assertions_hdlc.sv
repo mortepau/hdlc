@@ -159,7 +159,6 @@ module assertions_hdlc (
     endproperty
 
 	// 5. Start and end of frame pattern generation.
-	// Not checked
 	property p_Tx_FramePattern;
 	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) && $past(Tx_AbortFrame, 2) |-> Tx_flag;
 	endproperty
@@ -169,7 +168,6 @@ module assertions_hdlc (
 	endproperty
 
 	// 6. Zero insertion and removal of transparent transmission.
-    // Not checked
 	property p_Tx_InsertZero;
         @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:22] Tx_zero;
 	endproperty
@@ -179,7 +177,6 @@ module assertions_hdlc (
 	endproperty
 
 	// 7. Idle pattern generation and checking
-	// Not checked
 	property p_Tx_IdlePattern;
 	    @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_idle;
 	endproperty
@@ -189,7 +186,6 @@ module assertions_hdlc (
 	endproperty
 
 	// 8. Abort pattern generation and checking.
-	// Not checked
 	property p_Tx_AbortPattern;
 	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##3 Tx_abort;
 	endproperty
@@ -199,7 +195,6 @@ module assertions_hdlc (
 	endproperty
 
 	// 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
-	// Not checked
 	property p_Tx_AbortSignal;
 	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) && Tx_DataAvail |-> Tx_AbortedTrans;
 	endproperty
@@ -237,13 +232,11 @@ module assertions_hdlc (
 	endproperty
 
     // 17. Tx_Done should be asserted when entire TX buffer has been read for transmission
-	// Not checked
 	property p_Tx_Done;
 	    @(posedge Clk) disable iff (!Rst) $fell(Tx_DataAvail) |-> $past(Tx_Done, 1);
 	endproperty
 
 	// 18. Tx_Full should be asserted after writing 126 or more bytes to the TX buffer (overflow)
-	// Not checked
 	property p_Tx_Full;
         @(posedge Clk) disable iff (!Rst) $fell(Tx_Done) ##0 (($rose(Tx_WrBuff) [->1]) [*125]) ##0 !Tx_Done |=> Tx_Full;
 	endproperty
