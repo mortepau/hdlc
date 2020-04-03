@@ -196,7 +196,7 @@ module assertions_hdlc (
 
 	// 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
 	property p_Tx_AbortSignal;
-	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) && Tx_DataAvail |-> Tx_AbortedTrans;
+	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) && Tx_DataAvail |=> Tx_AbortedTrans;
 	endproperty
 
 	// 10. Abort pattern detected during valid frame should generate Rx_AbortSignal
