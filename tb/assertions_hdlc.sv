@@ -77,6 +77,33 @@ module assertions_hdlc (
 	*                Sequences                *
 	*******************************************/
 
+	sequence idle(signal);
+	    signal [*8];
+	endsequence;
+
+	sequence flag(signal);
+	    !signal ##1 signal [*6] ##1 !signal; 
+	endsequence
+
+	sequence abort(signal);
+	    !signal ##1 signal [*7];
+    endsequence
+
+	sequence zero(signal);
+	    !Rx ##1 Rx [*5] ##1 !Rx;
+	endsequence
+
+	sequence DataZero(data);
+        ( data ==? 8'b111110xx) or
+        ( data ==? 8'bx111110x) or
+        ( data ==? 8'bxx111110) or
+        ((data ==? 8'bxxx11111) && ($past(data, 8) ==? 8'b0xxxxxxx)) or
+        ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b10xxxxxx)) or
+        ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b110xxxxx)) or
+        ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b1110xxxx)) or
+        ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b11110xxx));
+    endsequence
+
 	/***********************
 	*         Rx          *
 	***********************/
@@ -159,40 +186,39 @@ module assertions_hdlc (
     endproperty
 
 	// 5. Start and end of frame pattern generation.
-    // TODO: FIX
 	property p_Tx_FramePattern;
-	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) ##0 $past(!Tx_AbortFrame, 2) |-> ##[1:2] Tx_flag;
+	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) ##0 $past(!Tx_AbortFrame, 2) |-> ##[1:2] flag(Tx);
 	endproperty
 
 	property p_Rx_FramePattern;
-	    @(posedge Clk) Rx_flag |-> ##2 Rx_FlagDetect;
+	    @(posedge Clk) flag(Rx) |-> ##2 Rx_FlagDetect;
 	endproperty
 
 	// 6. Zero insertion and removal of transparent transmission.
 	property p_Tx_InsertZero;
-        @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:22] Tx_zero;
+        @(posedge Clk) disable iff (!Rst) $rose(Tx_NewByte) ##0 DataZero(Tx_Data) |-> ##[13:22] zero(Tx);
 	endproperty
 
 	property p_Rx_RemoveZero;
-	    @(posedge Clk) disable iff (!Rst) (Rx_zero and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero;
+	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 DataZero(Rx_Data);
 	endproperty
 
 	// 7. Idle pattern generation and checking
 	property p_Tx_IdlePattern;
-	    @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> Tx_idle;
+	    @(posedge Clk) disable iff (!Rst) !Tx_ValidFrame && Tx_FrameSize == 8'b0 |-> idle(Tx);
 	endproperty
 
 	property p_Rx_IdlePattern;
-	      @(posedge Clk) disable iff (!Rst) Rx_idle |=> !Rx_FlagDetect; 
+	      @(posedge Clk) disable iff (!Rst) idle(Rx) |=> !Rx_FlagDetect; 
 	endproperty
 
 	// 8. Abort pattern generation and checking.
 	property p_Tx_AbortPattern;
-	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##4 Tx_abort;
+	    @(posedge Clk) disable iff (!Rst) $rose(Tx_AbortFrame) |-> ##4 abort(Tx);
 	endproperty
 
 	property p_Rx_AbortPattern;
-	    @(posedge Clk) disable iff (!Rst) Rx_abort and (!Rx_ValidFrame [*7]) |-> ##2 $rose(Rx_AbortDetect);
+	    @(posedge Clk) disable iff (!Rst) abort(Rx) and (!Rx_ValidFrame [*7]) |-> ##2 $rose(Rx_AbortDetect);
 	endproperty
 
 	// 9. When aborting frame during transmission, Tx_AbortedTrans should be asserted
