@@ -188,11 +188,11 @@ program testPr_hdlc(
 
 	    // Assert length is 0
 	    ReadAddress(RXLEN, DataLen);
-        assert(DataLen == 8'b0) begin
+        assert(DataLen == Size) begin
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
             TbErrorCnt++;
-            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect. Expected Rx_Len = 8'b0, Received Rx_Len = 0b%b", DataLen);
+            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect. Expected Rx_Len = 0b%b, Received Rx_Len = 0b%b", Size, DataLen);
         end
 
 	    // Assert that only Rx_FrameError is set
