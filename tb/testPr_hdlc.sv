@@ -177,6 +177,7 @@ program testPr_hdlc(
 	// register, and that the Rx data buffer is zero after frameError.
 	task VerifyFCSErrReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData, DataLen;
+        wait(uin_hdlc.Rx_Ready);
 
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
