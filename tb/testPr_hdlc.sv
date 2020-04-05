@@ -138,30 +138,21 @@ program testPr_hdlc(
 	    end
 	endtask
 
-	// VerifyAbortReceive should verify correct value in the Rx status/control
-	// register, and that the Rx data buffer is zero after abort.
-	// TODO: Check
+	// VerifyDropReceive should verify that the Rx data buffer is zero
+    // after dropping the frame.
 	task VerifyDropReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData;
 
-	    // Assert that only Rx_AbortSignal is set
-	    ReadAddress(RXSC, ReadData);
-	    // Mask the Write-Only bits
-	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h08)
-            $display("PASS: VerifyAbortReceive:: Abort received");
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
-	    end
+        // Drop the current frame
+        WriteAddress(RXSC, 8'h020);
 
 	    // Assert that Rx_Buff is 0
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $display("FAIL: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
