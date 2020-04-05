@@ -54,6 +54,12 @@ program testPr_hdlc(
 
 	    // Assert content is valid
 	    ReadAddress(RXLEN, DataLen);
+        assert (DataLen == Size) begin
+            $display("PASS: VerifyNormalReceive:: Data length as expected");
+        end else begin
+            TbErrorCnt++;
+            $error("FAIL: VerifyNormalReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
+        end
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
@@ -81,6 +87,12 @@ program testPr_hdlc(
 
 	    // Assert content is valid
 	    ReadAddress(RXLEN, DataLen);
+        assert (DataLen == Size) begin
+            $display("PASS: VerifyOverflowReceive:: Data length as expected");
+        end else begin
+            TbErrorCnt++;
+            $error("FAIL: VerifyOverflowReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
+        end
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
@@ -180,10 +192,10 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 8'h04) $display("PASS: VerifyFCSErrReceive:: Data ready");
+	    assert (ReadData == 8'h04) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert length is 0
