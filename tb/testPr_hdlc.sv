@@ -198,15 +198,6 @@ program testPr_hdlc(
 	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert length is 0
-	    ReadAddress(RXLEN, DataLen);
-        assert(DataLen == Size) begin
-            $display("PASS: VerifyFCSErrReceive:: Data size correct");
-        end else begin
-            TbErrorCnt++;
-            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect. Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
-        end
-
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
