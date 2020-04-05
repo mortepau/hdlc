@@ -22,10 +22,10 @@ program testPr_hdlc(
                 TXSC_DONE         = 8'b0000_0001,
                 RXSC_FCSEN        = 8'b0010_0000,
                 RXSC_OVERFLOW     = 8'b0001_0000,
-                RXSC_ABORTSIGNAL  = 8'b0001_0000,
-                RXSC_FRAMEERROR   = 8'b0001_0000,
-                RXSC_DROP         = 8'b0001_0000,
-                RXSC_READY        = 8'b0001_0000;
+                RXSC_ABORTSIGNAL  = 8'b0000_1000,
+                RXSC_FRAMEERROR   = 8'b0000_0100,
+                RXSC_DROP         = 8'b0000_0010,
+                RXSC_READY        = 8'b0000_0001;
                 
 	logic [7:0] RXSC_READ_MASK = 8'b1101_1101,
                 TXSC_READ_MASK = 8'b1111_1001;
@@ -184,7 +184,7 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == RXSC_FRAMEERROR) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
+	    assert (ReadData == RXSC_READY) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
