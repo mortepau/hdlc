@@ -151,6 +151,7 @@ program testPr_hdlc(
 	task VerifyNonByteAlignedReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData;
 	    wait(uin_hdlc.Rx_EoF);
+        $display("Received Rx_EoF");
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
