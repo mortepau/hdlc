@@ -18,7 +18,7 @@ program testPr_hdlc(
     logic [7:0] TXSC_FULL         = 8'b0001_0000,
                 TXSC_ABORTEDTRANS = 8'b0000_1000,
                 TXSC_ABORTFRAME   = 8'b0000_0100,
-                TXSC_ENABLE       = 8'b0000_0010
+                TXSC_ENABLE       = 8'b0000_0010,
                 TXSC_DONE         = 8'b0000_0001,
                 RXSC_FCSEN        = 8'b0010_0000,
                 RXSC_OVERFLOW     = 8'b0001_0000,
