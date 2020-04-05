@@ -625,8 +625,8 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
-            FCSBytes[Size]   = FCSBytes[7:0] ^ 8'b11111111;
-            FCSBytes[Size+1] = FCSBytes[15:8] ^ 8'b11111111;
+            FCSBytes[7:0]   = FCSBytes[7:0] ^ 8'b11111111;
+            FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
         end
 
         ReceiveData[Size]   = FCSBytes[7:0];
