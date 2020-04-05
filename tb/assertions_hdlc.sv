@@ -93,26 +93,26 @@ module assertions_hdlc (
 	    !signal ##1 signal [*5] ##1 !signal;
 	endsequence
 
-	sequence Rx_DataZero(data);
-        ( data ==? 8'b11111xxx) or
-        ( data ==? 8'bx11111xx) or
-        ( data ==? 8'bxx11111x) or
-        ( data ==? 8'bxxx11111) or
-        ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b1xxxxxxx)) or
-        ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b11xxxxxx)) or
-        ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b111xxxxx)) or
-        ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b1111xxxx));
+	sequence Rx_DataZero;
+        ( Rx_Data ==? 8'b11111xxx) or
+        ( Rx_Data ==? 8'bx11111xx) or
+        ( Rx_Data ==? 8'bxx11111x) or
+        ( Rx_Data ==? 8'bxxx11111) or
+        ((Rx_Data ==? 8'bxxxx1111) && ($past(Rx_Data, 8) ==? 8'b1xxxxxxx)) or
+        ((Rx_Data ==? 8'bxxxxx111) && ($past(Rx_Data, 8) ==? 8'b11xxxxxx)) or
+        ((Rx_Data ==? 8'bxxxxxx11) && ($past(Rx_Data, 8) ==? 8'b111xxxxx)) or
+        ((Rx_Data ==? 8'bxxxxxxx1) && ($past(Rx_Data, 8) ==? 8'b1111xxxx));
     endsequence
 
-	sequence Tx_DataZero(data);
-        ( data ==? 8'b111110xx) or
-        ( data ==? 8'bx111110x) or
-        ( data ==? 8'bxx111110) or
-        ((data ==? 8'bxxx11111) && ($past(data, 8) ==? 8'b0xxxxxxx)) or
-        ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b10xxxxxx)) or
-        ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b110xxxxx)) or
-        ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b1110xxxx)) or
-        ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b11110xxx));
+	sequence Tx_DataZero;
+        ( Tx_Data ==? 8'b111110xx) or
+        ( Tx_Data ==? 8'bx111110x) or
+        ( Tx_Data ==? 8'bxx111110) or
+        ((Tx_Data ==? 8'bxxx11111) && ($past(Tx_Data, 8) ==? 8'b0xxxxxxx)) or
+        ((Tx_Data ==? 8'bxxxx1111) && ($past(Tx_Data, 8) ==? 8'b10xxxxxx)) or
+        ((Tx_Data ==? 8'bxxxxx111) && ($past(Tx_Data, 8) ==? 8'b110xxxxx)) or
+        ((Tx_Data ==? 8'bxxxxxx11) && ($past(Tx_Data, 8) ==? 8'b1110xxxx)) or
+        ((Tx_Data ==? 8'bxxxxxxx1) && ($past(Tx_Data, 8) ==? 8'b11110xxx));
     endsequence
     
 	/*******************************************
@@ -145,11 +145,11 @@ module assertions_hdlc (
 
 	// 6. Zero insertion and removal of transparent transmission.
 	property p_Tx_InsertZero;
-        @(posedge Clk) disable iff (!Rst || !Tx_ValidFrame) $rose(Tx_NewByte) ##0 Tx_DataZero(Tx_Data) |-> ##[13:22] zero(Tx);
+        @(posedge Clk) disable iff (!Rst || !Tx_ValidFrame) $rose(Tx_NewByte) ##0 Tx_DataZero |-> ##[13:22] zero(Tx);
 	endproperty
 
 	property p_Rx_RemoveZero;
-	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero(Rx_Data);
+	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 Rx_DataZero;
 	endproperty
 
 	// 7. Idle pattern generation and checking
@@ -202,7 +202,6 @@ module assertions_hdlc (
 	endproperty
 
 	// 16. Non-byte aligned data or errors in FCS checking should result in frame error
-	// Not checked
 	property p_Rx_FCSerr;
 	    @(posedge Clk) disable iff (!Rst) $rose(Rx_FCSerr) && Rx_FCSen |=> $rose(Rx_FrameError);
 	endproperty
@@ -222,75 +221,75 @@ module assertions_hdlc (
 	********************************************/
 
 	Rx_Status_Assert : assert property (p_Rx_Status) begin
-	    $display("PASS: Status/Control Register correct");
+	    $display("PASS: Rx_SC correct");
 	end else begin
-		$error("Status/Control Register not set correctly");
+		$error("FAIL: Rx_SC incorrect");
 		ErrCntAssertions++;
 	end
 
 	Tx_FramePattern_Assert : assert property (p_Tx_FramePattern) begin
-	    $display("PASS: Flag detected on transmission side");
+	    $display("PASS: Flag sent");
 	end else begin
-	    $error("FAIL: Flag not detected on transmission side");
+	    $error("FAIL: Flag not sent");
 	    ErrCntAssertions++;
 	end
 
 	Rx_FramePattern_Assert : assert property (p_Rx_FramePattern) begin
-	    $display("PASS: Flag detected on receive side");
+	    $display("PASS: Flag received");
 	end else begin 
-	    $error("FAIL: Flag not detected on receive side"); 
+	    $error("FAIL: Flag not received"); 
 	    ErrCntAssertions++; 
 	end
 
 	Tx_InsertZero_Assert : assert property (p_Tx_InsertZero) begin
-	    $display("PASS: Zero insertion successful");
+	    $display("PASS: Zero inserted");
 	end else begin
-	    $error("FAIL: Zero insertion not detected");
+	    $error("FAIL: Zero not inserted");
 	    ErrCntAssertions++;
 	end
 
 	Rx_RemoveZero_Assert : assert property (p_Rx_RemoveZero) begin
-	    $display("PASS: Zero removal successful - Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
+        $display("PASS: Zero removed");
 	end else begin
-	    $error("FAIL: Zero removal not detected, Rx_Data=0b%b_%b", Rx_Data, $past(Rx_Data, 8));
+        $error("FAIL: Zero not removed");
 	    ErrCntAssertions++;
 	end
 
 	Tx_IdlePattern_Assert : assert property (p_Tx_IdlePattern) else begin
-	    $error("FAIL: Idle pattern not detected on transmitting side");
+	    $error("FAIL: Idle pattern not transmitted");
 	    ErrCntAssertions++;
 	end
 
 	Rx_IdlePattern_Assert : assert property (p_Rx_IdlePattern) else begin
-	    $error("FAIL: Idle pattern not detected on receiving side");
+	    $error("FAIL: Idle pattern not received");
 	    ErrCntAssertions++;
 	end
 
 	Tx_AbortPattern_Assert : assert property (p_Tx_AbortPattern) begin
-	    $display("PASS: Abort pattern generated");
+	    $display("PASS: Abort transmitted");
 	end else begin
-	    $error("FAIL: Abort pattern not generated");
+	    $error("FAIL: Abort not transmitted");
 	    ErrCntAssertions++;
 	end
 
 	Rx_AbortPattern_Assert : assert property (p_Rx_AbortPattern) begin
-	    $display("PASS: Abort pattern received");
+	    $display("PASS: Abort received");
 	end else begin
-	    $error("FAIL: Abort pattern not received");
+	    $error("FAIL: Abort not received");
 	    ErrCntAssertions++;
 	end
 
 	Tx_AbortSignal_Assert : assert property (p_Tx_AbortSignal) begin
 	    $display("PASS: Tx_AbortedTrans asserted");
 	end else begin
-	    $error("FAIL: Tx_AbortedTrans wasn't asserted");
+	    $error("FAIL: Tx_AbortedTrans not asserted");
 	    ErrCntAssertions++;
 	end
 
 	Rx_AbortSignal_Assert : assert property (p_Rx_AbortSignal) begin
-	    $display("PASS: Abort signal");
+	    $display("PASS: Rx_AbortSignal asserted");
 	end else begin 
-	    $error("FAIL: AbortSignal did not go high after AbortDetect during validframe"); 
+	    $error("FAIL: Rx_AbortSignal not asserted"); 
 	    ErrCntAssertions++; 
 	end
 
@@ -302,44 +301,44 @@ module assertions_hdlc (
 	end
 
 	Rx_Overflow_Assert : assert property (p_Rx_Overflow) begin
-	    $display("PASS: Rx_Overflow is high after receiving more than 128 bytes");
+	    $display("PASS: Rx_Overflow asserted");
     end else begin
-	    $error("FAIL: Rx_Overflow not asserted after receiving more than 128 bytes");
+	    $error("FAIL: Rx_Overflow not asserted");
 	    ErrCntAssertions++;
 	end
 
 	Rx_FrameSize_Assert : assert property (p_Rx_FrameSize) begin
-	    $display("PASS: #frames received equals Rx_FrameSize");
+	    $display("PASS: Rx_FrameSize correct");
 	end else begin
-	    $error("FAIL: #frames received does not equal Rx_FrameSize");
+	    $error("FAIL: Rx_FrameSize incorrect");
 	    ErrCntAssertions++;
 	end
 
 	Rx_Ready_Assert : assert property (p_Rx_Ready) begin
-	    $display("PASS: Rx_Ready asserted signals data to be read");
+	    $display("PASS: Data ready");
 	end else begin
-	    $error("FAIL: Rx_Ready asserted, but data isn't ready yet");
+	    $error("FAIL: Data not ready");
 	    ErrCntAssertions++;
 	end
 
 	Rx_FCSerr_Assert : assert property (p_Rx_FCSerr) begin
-	    $display("PASS: Frame error detected");
+	    $display("PASS: Rx_FrameError asserted");
 	end else begin
-	    $error("FAIL: Frame error not detected");
+	    $error("FAIL: Rx_FrameError not asserted");
 	    ErrCntAssertions++;
 	end
 
 	Tx_Done_Assert : assert property (p_Tx_Done) begin
 	    $display("PASS: Tx_Done asserted");
 	end else begin
-	    $error("FAIL: Tx_Done did not become asserted");
+	    $error("FAIL: Tx_Done not asserted");
 	    ErrCntAssertions++;
 	end
 
 	Tx_Full_Assert : assert property (p_Tx_Full) begin
 	    $display("PASS: Tx_Full asserted");
 	end else begin
-	    $error("FAIL: Tx_Full did not become asserted");
+	    $error("FAIL: Tx_Full not asserted");
 	    ErrCntAssertions++;
 	end
 
