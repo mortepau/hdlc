@@ -174,9 +174,38 @@ program testPr_hdlc(
 
 	// VerifyFCSErrReceive should verify correct value in the Rx status/control
 	// register, and that the Rx data buffer is zero after frameError.
-	// TODO: Check
 	task VerifyFCSErrReceive(logic [127:0][7:0] data, int Size);
-	    logic [7:0] ReadData;
+	    logic [7:0] ReadData, DataLen;
+	    wait(uin_hdlc.Rx_Ready);
+
+	    // Assert that only Rx_Ready is set
+	    ReadAddress(RXSC, ReadData);
+	    ReadData = ReadData & RXSC_READ_MASK;
+	    assert (ReadData == 'h01) $display("PASS: VerifyFCSErrReceive:: Data ready");
+	    else begin
+	        TbErrorCnt++;
+	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
+	    end
+
+	    // Assert content is valid
+	    ReadAddress(RXLEN, DataLen);
+        assert(DataLen == Size - 2) begin
+            $display("PASS: VerifyFCSErrReceive:: Data size correct");
+        end else begin
+            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect");
+        end
+
+	    for (int i = 0; i < DataLen; i++) begin
+	        ReadAddress(RXBUFF, ReadData);
+	        assert(ReadData == data[i]) else begin
+	            TbErrorCnt++;
+	            $error("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	        end
+	    end
+
+        // Wait 16 cycles for the FCS bits to be read
+        repeat(16)
+            @(posedge uin_hdlc.Clk);
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
