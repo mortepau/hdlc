@@ -180,28 +180,20 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h01) $display("PASS: VerifyFCSErrReceive:: Data ready");
+	    assert (ReadData == 'h04) $display("PASS: VerifyFCSErrReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert content is valid
+	    // Assert length is 0
 	    ReadAddress(RXLEN, DataLen);
-        assert(DataLen == Size) begin
+        assert(DataLen == 0) begin
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
             TbErrorCnt++;
             $error("FAIL: VerifyFCSErrReceive:: Data size incorrect");
         end
-
-	    for (int i = 0; i < DataLen; i++) begin
-	        ReadAddress(RXBUFF, ReadData);
-	        assert(ReadData == data[i]) else begin
-	            TbErrorCnt++;
-	            $error("FAIL: VerifyFCSErrReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
-	        end
-	    end
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
