@@ -192,6 +192,7 @@ program testPr_hdlc(
         assert(DataLen == Size) begin
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
+            TbErrorCnt++;
             $error("FAIL: VerifyFCSErrReceive:: Data size incorrect");
         end
 
@@ -624,8 +625,8 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
-            ReceiveData[Size]   = FCSBytes[7:0] ^ 8'hff;
-            ReceiveData[Size+1] = FCSBytes[15:8] ^ 8'hff;
+            ReceiveData[Size]   = ReceiveData[7:0] ^ 8'b11111111;
+            ReceiveData[Size+1] = ReceiveData[15:8] ^ 8'b11111111;
         end
 
         ReceiveData[Size]   = FCSBytes[7:0];
