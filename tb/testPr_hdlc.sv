@@ -132,7 +132,7 @@ program testPr_hdlc(
 	    logic [7:0] ReadData;
 
         // Drop the current frame
-        WriteAddress(RXSC, 8'h020);
+        WriteAddress(RXSC, 8'h02);
 
         @(posedge uin_hdlc.Clk);
 
