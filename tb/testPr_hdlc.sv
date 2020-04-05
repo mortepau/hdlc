@@ -150,9 +150,6 @@ program testPr_hdlc(
 	// register, and that the Rx data buffer is zero after Non-Byte-Alignment.
 	task VerifyNonByteAlignedReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData;
-        $display("Waiting for Rx_EoF");
-	    wait(uin_hdlc.Rx_EoF);
-        $display("Received Rx_EoF");
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
