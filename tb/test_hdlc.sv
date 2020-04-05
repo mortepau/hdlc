@@ -36,7 +36,7 @@ module test_hdlc ();
   assign uin_hdlc.Rx_FCSen           = u_dut.Rx_FCSen;
   assign uin_hdlc.Rx_RdBuff          = u_dut.Rx_RdBuff;
   assign uin_hdlc.Rx_Drop            = u_dut.Rx_Drop;
-  assign uin_hdlc.Tx_ValidFrame      = u_dut.Tx_Done;
+  assign uin_hdlc.Tx_ValidFrame      = u_dut.Tx_ValidFrame;
   assign uin_hdlc.Tx_AbortedTrans    = u_dut.Tx_AbortedTrans;
   assign uin_hdlc.Tx_WriteFCS        = u_dut.Tx_WriteFCS;
   assign uin_hdlc.Tx_InitZero        = u_dut.Tx_InitZero;
