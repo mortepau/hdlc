@@ -625,6 +625,7 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
+            $display("%b", FCSBytes);
             FCSBytes[7:0]  = FCSBytes[7:0] ^ 8'b11111111;
             FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
             $display("%b", FCSBytes);
