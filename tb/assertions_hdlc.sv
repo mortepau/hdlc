@@ -138,7 +138,7 @@ module assertions_hdlc (
 	endproperty
 
 	property p_Rx_RemoveZero;
-	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:18] Rx_NewByte ##1 DataZero(Rx_Data);
+	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:19] Rx_NewByte ##1 DataZero(Rx_Data);
 	endproperty
 
 	// 7. Idle pattern generation and checking
