@@ -150,13 +150,13 @@ program testPr_hdlc(
 	// register, and that the Rx data buffer is zero after Non-Byte-Alignment.
 	task VerifyNonByteAlignedReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData;
-	    wait(uin_hdlc.Rx_Ready);
+	    wait(uin_hdlc.Rx_EoF);
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h04)
+	    assert (ReadData == 8'h04)
             $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
