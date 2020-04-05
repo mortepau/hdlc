@@ -1,15 +1,11 @@
-# vsim -assertdebug -c -voptargs="+acc" test_hdlc bind_hdlc -do "log -r *; run -all; exit" 
-# Start time: 18:03:17 on Feb 20,2020
+# vsim -assertdebug -msgmode both -c -voptargs="+acc" test_hdlc bind_hdlc -do "log -r *; run -all; exit" 
+# Start time: 21:13:35 on Apr 05,2020
 # ** Note: (vsim-3812) Design is being optimized...
 # ** Note: (vopt-143) Recognized 1 FSM in module "TxFCS(fast)".
 # ** Note: (vopt-143) Recognized 1 FSM in module "RxBuff(fast)".
 # ** Note: (vopt-143) Recognized 1 FSM in module "TxController(fast)".
 # ** Note: (vopt-143) Recognized 1 FSM in module "RxController(fast)".
 # ** Note: (vopt-143) Recognized 1 FSM in module "TxBuff(fast)".
-# ** Warning: ./test_hdlc.sv(45): (vopt-2685) [TFMPC] - Too few port connections for 'u_dut'.  Expected 13, found 10.
-# ** Warning: ./test_hdlc.sv(45): (vopt-2718) [TFMPC] - Missing connection for port 'Tx_Done'.
-# ** Warning: ./test_hdlc.sv(45): (vopt-2718) [TFMPC] - Missing connection for port 'TxEN'.
-# ** Warning: ./test_hdlc.sv(45): (vopt-2718) [TFMPC] - Missing connection for port 'Tx'.
 # //  Questa Sim-64
 # //  Version 10.5c linux_x86_64 Jul 20 2016
 # //
@@ -48,64 +44,933 @@
 # *************************************************************
 #                 1000 - Starting task Receive - Normal
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyNormalReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyNormalReceive:: Rx_Len correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
 # *************************************************************
-#                67250 - Starting task Receive - Abort
+#                79250 - Starting task Receive - Abort
 # *************************************************************
-# PASS: Flag detect
-# PASS: Abort signal
-# PASS: Abort received
-# PASS: Expected ReadData = 0x00 Received ReadData = 0x00
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Rx_AbortSignal asserted
+# PASS: Rx_SC correct
+# PASS: Data ready
+# PASS: Rx_EoF asserted
+# PASS: VerifyAbortReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyAbortReceive:: Rx_Buff correct
 # *************************************************************
-#               257250 - Starting task Receive - Overflow
+#               269250 - Starting task Receive - Overflow
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Rx_Overflow asserted
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyOverflowReceive:: Rx_SC correct
+# PASS: VerifyOverflowReceive:: Rx_Len correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
 # *************************************************************
-#               810250 - Starting task Receive - Normal
+#               953250 - Starting task Receive - Normal
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyNormalReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyNormalReceive:: Rx_Len correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
 # *************************************************************
-#              1018750 - Starting task Receive - Normal
+#              1208750 - Starting task Receive - Normal
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: Rx_FrameSize correct
+# PASS: VerifyNormalReceive:: Rx_SC correct
+# PASS: VerifyNormalReceive:: Rx_Len correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
 # *************************************************************
-#              1555250 - Starting task Receive - Abort
+#              1873250 - Starting task Receive - Abort
 # *************************************************************
-# PASS: Flag detect
-# PASS: Abort signal
-# PASS: Abort received
-# PASS: Expected ReadData = 0x00 Received ReadData = 0x00
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Rx_AbortSignal asserted
+# PASS: Rx_SC correct
+# PASS: Data ready
+# PASS: Rx_EoF asserted
+# PASS: VerifyAbortReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyAbortReceive:: Rx_Buff correct
 # *************************************************************
-#              2081750 - Starting task Receive - Overflow
+#              2399750 - Starting task Receive - Overflow
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Rx_Overflow asserted
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyOverflowReceive:: Rx_SC correct
+# PASS: VerifyOverflowReceive:: Rx_Len correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
+# PASS: VerifyOverflowReceive:: Rx_Buff correct
 # *************************************************************
-#              2629750 - Starting task Receive - Normal
+#              3078750 - Starting task Receive - Normal
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyNormalReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyNormalReceive:: Rx_Len correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
 # *************************************************************
-#              2759250 - Starting task Receive - Normal
+#              3235250 - Starting task Receive - Normal
 # *************************************************************
-# PASS: Flag detect
-# PASS: Flag detect
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: VerifyNormalReceive:: Rx_SC correct
+# PASS: Rx_FrameSize correct
+# PASS: VerifyNormalReceive:: Rx_Len correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
+# PASS: VerifyNormalReceive:: Rx_Buff correct
 # *************************************************************
-#              2976250 - Finishing Test Program
+#              3501250 - Starting task Receive - FCS error
 # *************************************************************
-# ** Note: $stop    : ./testPr_hdlc.sv(102)
-#    Time: 2976250 ns  Iteration: 1  Instance: /test_hdlc/u_testPr
-# Break in Module testPr_hdlc at ./testPr_hdlc.sv line 102
-# Stopped at ./testPr_hdlc.sv line 102
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_FrameError asserted
+# PASS: Rx_EoF asserted
+# PASS: Rx_SC correct
+# PASS: VerifyFCSErrReceive:: Rx_SC correct
+# PASS: VerifyFCSErrReceive:: Rx_Buff correct  0
+# *************************************************************
+#              3765250 - Starting task Receive - Non-byte aligned
+# *************************************************************
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_EoF asserted
+# PASS: Rx_SC correct
+# PASS: VerifyNonByteAlignedReceive:: Rx_SX correct
+# PASS: VerifyNonByteAlignedReceive:: Rx_Buff correct  0
+# *************************************************************
+#              4159250 - Starting task Receive - Drop
+# *************************************************************
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: Rx_FrameSize correct
+# PASS: VerifyDropReceive:: Rx_Buff correct  0
+# *************************************************************
+#              4488750 - Starting task Receive - Skip read
+# *************************************************************
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Zero removed
+# PASS: Flag received
+# PASS: Zero removed
+# PASS: Rx_SC correct
+# PASS: Rx_EoF asserted
+# PASS: Data ready
+# PASS: Rx_FrameSize correct
+# *************************************************************
+#              4926250 - Starting task Transmit - Normal
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#              5102750 - Starting task Transmit - Abort
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_AbortedTrans asserted
+# PASS: Tx_Done asserted
+# PASS: VerifyAbortTransmit:: Tx_SC correct
+# PASS: Abort transmitted
+# *************************************************************
+#              6042750 - Starting task Transmit - Overflow
+# *************************************************************
+# PASS: Tx_Full asserted
+# PASS: Tx_Overflow asserted
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#              7276250 - Starting task Transmit - Normal
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#              7722250 - Starting task Transmit - Normal
+# *************************************************************
+# PASS: Tx_Full asserted
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#              8951250 - Starting task Transmit - Abort
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_AbortedTrans asserted
+# PASS: Tx_Done asserted
+# PASS: VerifyAbortTransmit:: Tx_SC correct
+# PASS: Abort transmitted
+# *************************************************************
+#              9316250 - Starting task Transmit - Overflow
+# *************************************************************
+# PASS: Tx_Full asserted
+# PASS: Tx_Overflow asserted
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#             10547250 - Starting task Transmit - Normal
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#             11737750 - Starting task Transmit - Normal
+# *************************************************************
+# PASS: Flag sent
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Zero inserted
+# PASS: Tx_Done asserted
+# PASS: VerifyNonAbortTransmit:: FCSBytes correct
+# PASS: Flag sent
+# *************************************************************
+#             12248250 - Finishing Test Program
+# *************************************************************
+# ** Note: $stop    : ./testPr_hdlc.sv(390)
+#    Time: 12248250 ns  Iteration: 2  Instance: /test_hdlc/u_testPr
+# Break in Module testPr_hdlc at ./testPr_hdlc.sv line 390
+# Stopped at ./testPr_hdlc.sv line 390
 #  exit
 # *********************************
 # *                               *
 # * 	Assertion Errors: 0	  *
 # *                               *
 # *********************************
-# End time: 18:03:21 on Feb 20,2020, Elapsed time: 0:00:04
-# Errors: 0, Warnings: 4
+# End time: 21:13:39 on Apr 05,2020, Elapsed time: 0:00:04
+# Errors: 0, Warnings: 0
