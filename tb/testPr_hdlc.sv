@@ -4,39 +4,31 @@
 // Date:	
 //////////////////////////////////////////////////
 
-/* testPr_hdlc contains the simulation and immediate assertion code of the
-	 testbench. 
-
-	 For this exercise you will write immediate assertions for the Rx module which
-	 should verify correct values in some of the Rx registers for:
-	 - Normal behavior
-	 - Buffer overflow 
-	 - Aborts
-
-	 HINT:
-	 - A ReadAddress() task is provided, and addresses are documentet in the 
-	   HDLC Module Design Description
-*/
-
 program testPr_hdlc(
     in_hdlc uin_hdlc
 );
 	
     int TbErrorCnt;
 
-    /****************************************************************************
-	 *                                                                          *
-	 *                               Student code                               *
-	 *                                                                          *
-	 ****************************************************************************/
-	
     logic [2:0] TXSC   = 3'b000,
 	            TXBUFF = 3'b001, 
 	            RXSC   = 3'b010, 
 	            RXBUFF = 3'b011, 
 	            RXLEN  = 3'b100; 
-	logic [7:0] RXSC_READ_MASK = 8'b11011101,
-                TXSC_READ_MASK = 8'b11111001;
+    logic [7:0] TXSC_FULL         = 8'b0001_0000,
+                TXSC_ABORTEDTRANS = 8'b0000_1000,
+                TXSC_ABORTFRAME   = 8'b0000_0100,
+                TXSC_ENABLE       = 8'b0000_0010
+                TXSC_DONE         = 8'b0000_0001,
+                RXSC_FCSEN        = 8'b0010_0000,
+                RXSC_OVERFLOW     = 8'b0001_0000,
+                RXSC_ABORTSIGNAL  = 8'b0001_0000,
+                RXSC_FRAMEERROR   = 8'b0001_0000,
+                RXSC_DROP         = 8'b0001_0000,
+                RXSC_READY        = 8'b0001_0000,
+                
+	logic [7:0] RXSC_READ_MASK = 8'b1101_1101,
+                TXSC_READ_MASK = 8'b1111_1001;
 
     // VerifyNormalReceive should verify correct value in the Rx status/control register
     task VerifyNormalReceive(logic [127:0][7:0] data, int Size);
@@ -46,7 +38,7 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h01) $display("PASS: VerifyNormalReceive:: Data ready");
+	    assert (ReadData == RXSC_READY) $display("PASS: VerifyNormalReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyNormalReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
@@ -78,7 +70,7 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h11) 
+	    assert (ReadData == (RXSC_OVERFLOW | RXSC_READY)) 
             $display("PASS: VerifyOverflowReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
@@ -121,7 +113,7 @@ program testPr_hdlc(
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h08)
+	    assert (ReadData == RXSC_ABORTSIGNAL)
             $display("PASS: VerifyAbortReceive:: Abort received");
 	    else begin
 	        TbErrorCnt++;
@@ -144,7 +136,7 @@ program testPr_hdlc(
 	    logic [7:0] ReadData;
 
         // Drop the current frame
-        WriteAddress(RXSC, 8'h02);
+        WriteAddress(RXSC, RXSC_DROP);
 
         @(posedge uin_hdlc.Clk);
 
@@ -167,7 +159,7 @@ program testPr_hdlc(
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 8'h04)
+	    assert (ReadData == RXSC_FRAMEERROR)
             $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
@@ -192,7 +184,7 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 8'h04) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
+	    assert (ReadData == RXSC_FRAMEERROR) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
@@ -202,7 +194,7 @@ program testPr_hdlc(
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h04)
+	    assert (ReadData == RXSC_FRAMEERROR)
             $display("PASS: VerifyFCSErrReceive:: FrameError received");
 	    else begin
 	        TbErrorCnt++;
@@ -309,7 +301,7 @@ program testPr_hdlc(
         end
 
         // Abort the frame
-        WriteAddress(TXSC, 8'h04);
+        WriteAddress(TXSC, TXSC_ABORTFRAME);
 
         // Wait 2 clock cycles
         @(posedge uin_hdlc.Clk);
@@ -317,7 +309,7 @@ program testPr_hdlc(
 
         // Check that Tx_AbortedTrans is asserted
         ReadAddress(TXSC, ReadData);
-        assert (ReadData == 8'h09) begin
+        assert (ReadData == (TXSC_ABORTEDTRANS | TXSC_DONE)) begin
             $display("PASS: Tx_AbortedTrans asserted");
         end else begin
             $error("FAIL: Tx_AbortedTrans was not asserted");
