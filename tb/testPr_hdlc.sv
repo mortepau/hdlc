@@ -216,7 +216,7 @@ program testPr_hdlc(
             $display("PASS: VerifyFrameErrorReceive:: FrameError received");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
@@ -625,8 +625,8 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
-            ReceiveData[Size]   = ReceiveData[7:0] ^ 8'b11111111;
-            ReceiveData[Size+1] = ReceiveData[15:8] ^ 8'b11111111;
+            FCSBytes[Size]   = FCSBytes[7:0] ^ 8'b11111111;
+            FCSBytes[Size+1] = FCSBytes[15:8] ^ 8'b11111111;
         end
 
         ReceiveData[Size]   = FCSBytes[7:0];
