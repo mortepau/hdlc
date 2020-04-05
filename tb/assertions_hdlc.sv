@@ -94,16 +94,27 @@ module assertions_hdlc (
 	endsequence
 
 	sequence DataZero(data);
-        ( data ==? 8'b111110xx) or
-        ( data ==? 8'bx111110x) or
-        ( data ==? 8'bxx111110) or
-        ((data ==? 8'bxxx11111) && ($past(data, 8) ==? 8'b0xxxxxxx)) or
-        ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b10xxxxxx)) or
-        ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b110xxxxx)) or
-        ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b1110xxxx)) or
-        ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b11110xxx));
+        ( data ==? 8'b11111xxx) or
+        ( data ==? 8'bx11111xx) or
+        ( data ==? 8'bxx11111x) or
+        ((data ==? 8'bxxx11111) or
+        ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b1xxxxxxx)) or
+        ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b11xxxxxx)) or
+        ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b111xxxxx)) or
+        ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b1111xxxx));
     endsequence
 
+	/* sequence DataZero(data); */
+        /* ( data ==? 8'b111110xx) or */
+        /* ( data ==? 8'bx111110x) or */
+        /* ( data ==? 8'bxx111110) or */
+        /* ((data ==? 8'bxxx11111) && ($past(data, 8) ==? 8'b0xxxxxxx)) or */
+        /* ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b10xxxxxx)) or */
+        /* ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b110xxxxx)) or */
+        /* ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b1110xxxx)) or */
+        /* ((data ==? 8'bxxxxxxx1) && ($past(data, 8) ==? 8'b11110xxx)); */
+    /* endsequence */
+    
 	/*******************************************
 	*                Properties               *
 	*******************************************/
@@ -138,7 +149,7 @@ module assertions_hdlc (
 	endproperty
 
 	property p_Rx_RemoveZero;
-	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:19] Rx_NewByte ##1 DataZero(Rx_Data);
+	    @(posedge Clk) disable iff (!Rst) (zero(Rx) and Rx_ValidFrame [*6]) |-> ##[9:17] Rx_NewByte ##1 DataZero(Rx_Data);
 	endproperty
 
 	// 7. Idle pattern generation and checking
