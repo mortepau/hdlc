@@ -200,32 +200,28 @@ program testPr_hdlc(
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
 	            TbErrorCnt++;
-	            $error("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	            $error("FAIL: VerifyFCSErrReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
 	        end
 	    end
-
-        // Wait 16 cycles for the FCS bits to be read
-        repeat(16)
-            @(posedge uin_hdlc.Clk);
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == 'h04)
-            $display("PASS: VerifyFrameErrorReceive:: FrameError received");
+            $display("PASS: VerifyFCSErrReceive:: FrameError received");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyFCSErrReceive:: FrameError not received, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyFCSErrReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyFCSErrReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
