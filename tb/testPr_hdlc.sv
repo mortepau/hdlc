@@ -25,7 +25,7 @@ program testPr_hdlc(
                 RXSC_ABORTSIGNAL  = 8'b0001_0000,
                 RXSC_FRAMEERROR   = 8'b0001_0000,
                 RXSC_DROP         = 8'b0001_0000,
-                RXSC_READY        = 8'b0001_0000,
+                RXSC_READY        = 8'b0001_0000;
                 
 	logic [7:0] RXSC_READ_MASK = 8'b1101_1101,
                 TXSC_READ_MASK = 8'b1111_1001;
