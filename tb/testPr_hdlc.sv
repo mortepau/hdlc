@@ -10,11 +10,14 @@ program testPr_hdlc(
 	
     int TbErrorCnt;
 
+    // Addresses
     logic [2:0] TXSC   = 3'b000,
 	            TXBUFF = 3'b001, 
 	            RXSC   = 3'b010, 
 	            RXBUFF = 3'b011, 
 	            RXLEN  = 3'b100; 
+
+    // Address bits
     logic [7:0] TXSC_FULL         = 8'b0001_0000,
                 TXSC_ABORTEDTRANS = 8'b0000_1000,
                 TXSC_ABORTFRAME   = 8'b0000_0100,
@@ -27,24 +30,30 @@ program testPr_hdlc(
                 RXSC_DROP         = 8'b0000_0010,
                 RXSC_READY        = 8'b0000_0001;
                 
+    // Read masks
 	logic [7:0] RXSC_READ_MASK = 8'b1101_1101,
                 TXSC_READ_MASK = 8'b1111_1001;
 
     // VerifyNormalReceive should verify correct value in the Rx status/control register
+    // and that the output is correct
     task VerifyNormalReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData, DataLen;
+
+        // Wait for Rx_Ready to be asserted
 	    wait(uin_hdlc.Rx_Ready);
 
-	    // Assert that only Rx_Ready is set
+	    // Assert that only Rx_Ready is set in RX_SC
 	    ReadAddress(RXSC, ReadData);
+        // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == RXSC_READY) $display("PASS: VerifyNormalReceive:: Data ready");
-	    else begin
+        assert (ReadData == RXSC_READY) begin
+            $display("PASS: VerifyNormalReceive:: Data ready");
+        end else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyNormalReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert content is valid
+	    // Assert data length is correct
 	    ReadAddress(RXLEN, DataLen);
         assert (DataLen == Size) begin
             $display("PASS: VerifyNormalReceive:: Data length as expected");
@@ -52,6 +61,8 @@ program testPr_hdlc(
             TbErrorCnt++;
             $error("FAIL: VerifyNormalReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
         end
+
+        // Check content
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
@@ -62,13 +73,17 @@ program testPr_hdlc(
 	endtask
 
 	// VerifyOverflowReceive should verify correct value in the Rx status/control
-	// register, and that the Rx data buffer is zero after overflow.
+	// register, that the data is correct and that the Rx data buffer is 
+    // zero after overflow.
 	task VerifyOverflowReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData, DataLen;
+
+        // Wait for Rx_Ready to be asserted
 	    wait(uin_hdlc.Rx_Ready);
 
-	    // Assert that only Rx_Ready is set
+	    // Assert that Rx_Ready and Rx_Overflow is set
 	    ReadAddress(RXSC, ReadData);
+        // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == (RXSC_OVERFLOW | RXSC_READY)) 
             $display("PASS: VerifyOverflowReceive:: Data ready");
@@ -77,7 +92,7 @@ program testPr_hdlc(
 	        $error("FAIL: VerifyOverflowReceive:: Expected Rx_SC = 0x11, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert content is valid
+	    // Assert data length is correct 
 	    ReadAddress(RXLEN, DataLen);
         assert (DataLen == Size) begin
             $display("PASS: VerifyOverflowReceive:: Data length as expected");
@@ -85,6 +100,8 @@ program testPr_hdlc(
             TbErrorCnt++;
             $error("FAIL: VerifyOverflowReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
         end
+
+        // Check content
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
@@ -92,7 +109,8 @@ program testPr_hdlc(
 	            $error("FAIL: VerifyOverflowReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
 	        end
 	    end
-	    // Read a few times extra to assert the output is zero
+
+	    // Read a few extra bytes and check that they are invalid
         for (int i = 0; i < 3; i++) begin
             ReadAddress(RXBUFF, ReadData);
             assert(ReadData == 8'b0) 
@@ -111,7 +129,7 @@ program testPr_hdlc(
 
 	    // Assert that only Rx_AbortSignal is set
 	    ReadAddress(RXSC, ReadData);
-	    // Mask the Write-Only bits
+        // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_ABORTSIGNAL)
             $display("PASS: VerifyAbortReceive:: Abort received");
@@ -120,7 +138,7 @@ program testPr_hdlc(
 	        $error("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert that Rx_Buff is 0
+	    // Assert that data is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
             $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
@@ -140,7 +158,7 @@ program testPr_hdlc(
 
         @(posedge uin_hdlc.Clk);
 
-	    // Assert that Rx_Buff is 0
+	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
             $display("PASS: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
@@ -157,7 +175,7 @@ program testPr_hdlc(
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
-	    // Mask the Write-Only bits
+        // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_FRAMEERROR)
             $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
@@ -166,7 +184,7 @@ program testPr_hdlc(
 	        $error("FAIL: VerifyNonByteAlignedReceive:: FrameError not asserted, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert that Rx_Buff is 0
+	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
             $display("PASS: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
@@ -183,7 +201,7 @@ program testPr_hdlc(
 
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
-	    // Mask the Write-Only bits
+	    // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_FRAMEERROR)
             $display("PASS: VerifyFCSErrReceive:: FrameError received");
@@ -192,7 +210,7 @@ program testPr_hdlc(
 	        $error("FAIL: VerifyFCSErrReceive:: FrameError not received, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
-	    // Assert that Rx_Buff is 0
+	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
             $display("PASS: VerifyFCSErrReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
@@ -300,6 +318,8 @@ program testPr_hdlc(
 
         // Check that Tx_AbortedTrans is asserted
         ReadAddress(TXSC, ReadData);
+	    // Only check RO bits 
+        ReadData = ReadData & TXSC_READ_MASK;
         assert (ReadData == (TXSC_ABORTEDTRANS | TXSC_DONE)) begin
             $display("PASS: Tx_AbortedTrans asserted");
         end else begin
@@ -523,7 +543,7 @@ program testPr_hdlc(
     endtask
 
     // Flatten the 2D array of data + FCS bytes and insert zeros when 5 consequent 1's 
-    task MakeTxOutput(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output int FCSSize);
+    task ConvertToTxStream(input logic [127:0][7:0] Data, input int Size, output logic [128*8 + 200:0] fData, output int newSize, output int FCSSize);
         logic [4:0] prevData;
 
         prevData = '0;
@@ -696,7 +716,7 @@ program testPr_hdlc(
 	    TransmitData[Size+1]   = FCSBytes[15:8];
 	  
         // Flatten data and insert zeros
-        MakeTxOutput(TransmitData, Size, fData, NewSize, FCSSize);
+        ConvertToTxStream(TransmitData, Size, fData, NewSize, FCSSize);
 
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
