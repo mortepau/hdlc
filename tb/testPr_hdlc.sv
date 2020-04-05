@@ -65,7 +65,9 @@ program testPr_hdlc(
         // Check content
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
-	        assert(ReadData == data[i]) else begin
+            assert(ReadData == data[i]) begin
+                $display("PASS: VerifyNormalReceive:: Rx_Buff correct");
+            end else begin
 	            TbErrorCnt++;
 	            $error("FAIL: VerifyNormalReceive:: Expected Rx_Buff = 0x%h, Received Rx_Buff = 0x%h", data[i], ReadData);
 	        end
@@ -104,7 +106,9 @@ program testPr_hdlc(
         // Check content
 	    for (int i = 0; i < DataLen; i++) begin
 	        ReadAddress(RXBUFF, ReadData);
-	        assert(ReadData == data[i]) else begin
+            assert(ReadData == data[i]) begin
+                $display("PASS: VerifyOverflowReceive:: Rx_Buff correct");
+            end else begin
 	            TbErrorCnt++;
 	            $error("FAIL: VerifyOverflowReceive:: Expected Rx_Buff = 0x%h, Received Rx_Buff = 0x%h", data[i], ReadData);
 	        end
