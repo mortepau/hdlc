@@ -49,7 +49,7 @@ program testPr_hdlc(
 	    assert (ReadData == 'h01) $display("PASS: VerifyNormalReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyNormalReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyNormalReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert content is valid
@@ -58,7 +58,7 @@ program testPr_hdlc(
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
 	            TbErrorCnt++;
-	            $display("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	            $error("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
 	        end
 	    end
 	endtask
@@ -76,7 +76,7 @@ program testPr_hdlc(
             $display("PASS: VerifyOverflowReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyOverflowReceive:: Expected Rx_SC = 0x11, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyOverflowReceive:: Expected Rx_SC = 0x11, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert content is valid
@@ -85,7 +85,7 @@ program testPr_hdlc(
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
 	            TbErrorCnt++;
-	            $display("FAIL: VerifyOverflowReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	            $error("FAIL: VerifyOverflowReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
 	        end
 	    end
 	    // Read a few times extra to assert the output is zero
@@ -95,7 +95,7 @@ program testPr_hdlc(
                 $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
             else begin
                 TbErrorCnt++;
-                $display("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
+                $error("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
             end
         end
     endtask
@@ -113,7 +113,7 @@ program testPr_hdlc(
             $display("PASS: VerifyAbortReceive:: Abort received");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
@@ -122,7 +122,7 @@ program testPr_hdlc(
             $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -140,7 +140,7 @@ program testPr_hdlc(
             $display("PASS: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -157,7 +157,7 @@ program testPr_hdlc(
             $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyNonByteAlignedReceive:: FrameError not asserted, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyNonByteAlignedReceive:: FrameError not asserted, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
@@ -166,7 +166,7 @@ program testPr_hdlc(
             $display("PASS: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -184,7 +184,7 @@ program testPr_hdlc(
             $display("PASS: VerifyFrameErrorReceive:: FrameError received");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
@@ -193,7 +193,7 @@ program testPr_hdlc(
             $display("PASS: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
