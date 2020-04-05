@@ -592,7 +592,7 @@ program testPr_hdlc(
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
-        if (FCSErr) begin
+        if (FCSerr) begin
             ReceiveData[Size]   = FCSBytes[7:0] ^ 8'hff;
             ReceiveData[Size+1] = FCSBytes[15:8] ^ 8'hff;
         end
