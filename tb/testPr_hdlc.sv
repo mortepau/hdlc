@@ -170,7 +170,7 @@ program testPr_hdlc(
 	    end
 	endtask
 
-	// VerifyFrameErrorReceive should verify correct value in the Rx status/control
+	// VerifyFCSErrReceive should verify correct value in the Rx status/control
 	// register, and that the Rx data buffer is zero after frameError.
 	// TODO: Check
 	task VerifyFCSErrReceive(logic [127:0][7:0] data, int Size);
@@ -197,34 +197,8 @@ program testPr_hdlc(
 	    end
 	endtask
 
-	// VerifyFrameErrorReceive should verify correct value in the Rx status/control
-	// register, and that the Rx data buffer is zero after frameError.
-	// TODO: Check
-	task VerifyFrameErrorReceive(logic [127:0][7:0] data, int Size);
-	    logic [7:0] ReadData;
-
-	    // Assert that only Rx_FrameError is set
-	    ReadAddress(RXSC, ReadData);
-	    // Mask the Write-Only bits
-	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h04)
-            $display("PASS: VerifyFrameErrorReceive:: FrameError received");
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyFrameErrorReceive:: FrameError not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
-	    end
-
-	    // Assert that Rx_Buff is 0
-	    ReadAddress(RXBUFF, ReadData);
-	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyFrameErrorReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
-	    end
-	endtask
-
-
+    // VerifyNonAbortTransmit should verify correct output stream from Tx
+    // and that CRC is correct
     task VerifyNonAbortTransmit(logic [128*8+204:0] fData, int Size, int FCSSize);
         // Using +3 as this takes potential zero insertions into consideration
         // floor(16/5)=3
@@ -280,6 +254,8 @@ program testPr_hdlc(
         end
     endtask
 
+    // VerifyAbortTransmit should verify correct output stream from Tx
+    // and that the abort sequence is generated and idle after that
     task VerifyAbortTransmit(logic [128*8+204:0] fData, int Size);
         // Using +3 as this takes potential zero insertions into consideration
         // floor(16/5)=3
@@ -615,8 +591,14 @@ program testPr_hdlc(
 
 	    //Calculate FCS bits;
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
-	    ReceiveData[Size]   = FCSBytes[7:0];
-	    ReceiveData[Size+1] = FCSBytes[15:8];
+
+        if (FCSErr) begin
+            ReceiveData[Size]   = FCSBytes[7:0] ^ 8'hff;
+            ReceiveData[Size+1] = FCSBytes[15:8] ^ 8'hff;
+        end
+
+        ReceiveData[Size]   = FCSBytes[7:0];
+        ReceiveData[Size+1] = FCSBytes[15:8];
 
 	    //Enable FCS
 	    if(!Overflow && !NonByteAligned) 
