@@ -371,10 +371,10 @@ program testPr_hdlc(
 	    Receive(     126,     0,      0,              0,        1,    0,        0); // Overflow
 	    Receive(      25,     0,      0,              0,        0,    0,        0); // Normal
 	    Receive(      47,     0,      0,              0,        0,    0,        0); // Normal
-	    Receive(      47,     0,      1,              0,        0,    0,        0); // FCSerr
-	    Receive(      47,     0,      0,              1,        0,    0,        0); // NonByteAligned
-	    Receive(      47,     0,      0,              0,        0,    1,        0); // Drop
-	    Receive(      47,     0,      0,              0,        0,    0,        1); // SkipRead
+	    Receive(      58,     0,      1,              0,        0,    0,        0); // FCSerr
+	    Receive(      90,     0,      0,              1,        0,    0,        0); // NonByteAligned
+	    Receive(      74,     0,      0,              0,        0,    1,        0); // Drop
+	    Receive(     101,     0,      0,              0,        0,    0,        1); // SkipRead
 
         //Transmit: Size, Abort, Overflow
         Transmit(     10,     0,        0); // Normal
@@ -625,14 +625,9 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
-            $display("%b", FCSBytes);
             FCSBytes[7:0]  = FCSBytes[7:0] ^ 8'b11111111;
             FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
-            $display("%b", FCSBytes);
         end
-
-        ReceiveData[Size]   = FCSBytes[7:0];
-        ReceiveData[Size+1] = FCSBytes[15:8];
 
 	    //Enable FCS
 	    if(!Overflow && !NonByteAligned) 
@@ -643,7 +638,7 @@ program testPr_hdlc(
 	    //Generate stimulus
 	    InsertFlagOrAbort(1);
 	  
-	    MakeRxStimulus(ReceiveData, Size + 2);
+	    MakeRxStimulus(ReceiveData, Size);
 	  
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
@@ -664,6 +659,7 @@ program testPr_hdlc(
 	    if(Abort) begin
 	        InsertFlagOrAbort(0);
 	    end else begin
+            MakeRxStimulus(FCSBytes, 2);
 	        InsertFlagOrAbort(1);
 	    end
 
