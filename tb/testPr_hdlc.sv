@@ -627,6 +627,7 @@ program testPr_hdlc(
         if (FCSerr) begin
             FCSBytes[7:0]  = FCSBytes[7:0] ^ 8'b11111111;
             FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
+            $display("%b", FCSBytes);
         end
 
         ReceiveData[Size]   = FCSBytes[7:0];
@@ -671,7 +672,6 @@ program testPr_hdlc(
 	    repeat(8)
 	        @(posedge uin_hdlc.Clk);
 
-        $display("HERE");
 	    if(Abort)
 	        VerifyAbortReceive(ReceiveData, Size);
 	    else if(Overflow)
