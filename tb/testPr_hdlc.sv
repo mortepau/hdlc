@@ -180,7 +180,7 @@ program testPr_hdlc(
 	    // Assert that only Rx_Ready is set
 	    ReadAddress(RXSC, ReadData);
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h04) $display("PASS: VerifyFCSErrReceive:: Data ready");
+	    assert (ReadData == 8'h04) $display("PASS: VerifyFCSErrReceive:: Data ready");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
@@ -188,7 +188,7 @@ program testPr_hdlc(
 
 	    // Assert length is 0
 	    ReadAddress(RXLEN, DataLen);
-        assert(DataLen == 0) begin
+        assert(DataLen == 8'b0) begin
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
             TbErrorCnt++;
