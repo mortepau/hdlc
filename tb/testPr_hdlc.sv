@@ -89,27 +89,15 @@ program testPr_hdlc(
 	        end
 	    end
 	    // Read a few times extra to assert the output is zero
-	    ReadAddress(RXBUFF, ReadData);
-	    assert(ReadData == 8'b0) 
-            $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
-	    end
-	    ReadAddress(RXBUFF, ReadData);
-	    assert(ReadData == 8'b0)
-            $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
-	    end
-	    ReadAddress(RXBUFF, ReadData);
-	    assert(ReadData == 8'b0)
-            $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
-	    else begin
-	        TbErrorCnt++;
-	        $display("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
-	    end
+        for (int i = 0; i < 3; i++) begin
+            ReadAddress(RXBUFF, ReadData);
+            assert(ReadData == 8'b0) 
+                $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
+            else begin
+                TbErrorCnt++;
+                $display("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
+            end
+        end
     endtask
 
 	// VerifyAbortReceive should verify correct value in the Rx status/control
@@ -156,30 +144,29 @@ program testPr_hdlc(
 	    end
 	endtask
 
-	// VerifyAbortReceive should verify correct value in the Rx status/control
-	// register, and that the Rx data buffer is zero after abort.
-	// TODO: Check
+	// VerifyNonByteAlignedReceive should verify correct value in the Rx status/control
+	// register, and that the Rx data buffer is zero after Non-Byte-Alignment.
 	task VerifyNonByteAlignedReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData;
 
-	    // Assert that only Rx_AbortSignal is set
+	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
 	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == 'h08)
-            $display("PASS: VerifyAbortReceive:: Abort received");
+	    assert (ReadData == 'h04)
+            $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
+	        $display("FAIL: VerifyNonByteAlignedReceive:: FrameError not asserted, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is 0
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $display("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $display("FAIL: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -648,6 +635,15 @@ program testPr_hdlc(
 	        OverflowData[2] = 8'hCC;
 	        MakeRxStimulus(OverflowData, 3);
 	    end
+
+        if (NonByteAligned) begin
+            @(posedge uin_hdlc.Clk);
+                uin_hdlc.Rx = 1'b1;
+            @(posedge uin_hdlc.Clk);
+                uin_hdlc.Rx = 1'b0;
+            @(posedge uin_hdlc.Clk);
+                uin_hdlc.Rx = 1'b0;
+        end
 
 	    if(Abort) begin
 	        InsertFlagOrAbort(0);
