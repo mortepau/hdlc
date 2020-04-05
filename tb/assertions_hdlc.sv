@@ -97,7 +97,7 @@ module assertions_hdlc (
         ( data ==? 8'b11111xxx) or
         ( data ==? 8'bx11111xx) or
         ( data ==? 8'bxx11111x) or
-        ((data ==? 8'bxxx11111) or
+        ( data ==? 8'bxxx11111) or
         ((data ==? 8'bxxxx1111) && ($past(data, 8) ==? 8'b1xxxxxxx)) or
         ((data ==? 8'bxxxxx111) && ($past(data, 8) ==? 8'b11xxxxxx)) or
         ((data ==? 8'bxxxxxx11) && ($past(data, 8) ==? 8'b111xxxxx)) or
