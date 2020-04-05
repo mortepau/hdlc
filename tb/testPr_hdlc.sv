@@ -625,7 +625,7 @@ program testPr_hdlc(
 	    GenerateFCSBytes(ReceiveData, Size, FCSBytes);
 
         if (FCSerr) begin
-            FCSBytes[7:0]   = FCSBytes[7:0] ^ 8'b11111111;
+            FCSBytes[7:0]  = FCSBytes[7:0] ^ 8'b11111111;
             FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
         end
 
@@ -678,6 +678,7 @@ program testPr_hdlc(
 	    else if(Drop)
 	        VerifyDropReceive(ReceiveData, Size);
 	    else if(FCSerr)
+            $display("HERE");
 	        VerifyFCSErrReceive(ReceiveData, Size);
 	    else if(NonByteAligned)
 	        VerifyNonByteAlignedReceive(ReceiveData, Size);
