@@ -189,7 +189,7 @@ program testPr_hdlc(
 
 	    // Assert content is valid
 	    ReadAddress(RXLEN, DataLen);
-        assert(DataLen == Size - 2) begin
+        assert(DataLen == Size) begin
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
             $error("FAIL: VerifyFCSErrReceive:: Data size incorrect");
