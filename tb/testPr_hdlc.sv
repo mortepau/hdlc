@@ -134,6 +134,8 @@ program testPr_hdlc(
         // Drop the current frame
         WriteAddress(RXSC, 8'h020);
 
+        @(posedge uin_hdlc.Clk);
+
 	    // Assert that Rx_Buff is 0
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
