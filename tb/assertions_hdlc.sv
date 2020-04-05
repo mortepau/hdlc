@@ -159,8 +159,9 @@ module assertions_hdlc (
     endproperty
 
 	// 5. Start and end of frame pattern generation.
+    // TODO: FIX
 	property p_Tx_FramePattern;
-	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) ##0 $past(!Tx_AbortFrame, 2) |-> ##[0:2] Tx_flag;
+	    @(posedge Clk) disable iff (!Rst) !$stable(Tx_ValidFrame) ##0 $past(Tx_AbortFrame, 2) |-> Tx_flag;
 	endproperty
 
 	property p_Rx_FramePattern;
@@ -262,7 +263,7 @@ module assertions_hdlc (
 	Rx_FramePattern_Assert : assert property (p_Rx_FramePattern) begin
 	    $display("PASS: Flag detected on receive side");
 	end else begin 
-	    $error("FAIL: Flag no detected on receive side"); 
+	    $error("FAIL: Flag not detected on receive side"); 
 	    ErrCntAssertions++; 
 	end
 
