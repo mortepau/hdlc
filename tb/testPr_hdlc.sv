@@ -671,6 +671,7 @@ program testPr_hdlc(
 	    repeat(8)
 	        @(posedge uin_hdlc.Clk);
 
+        $display("HERE");
 	    if(Abort)
 	        VerifyAbortReceive(ReceiveData, Size);
 	    else if(Overflow)
@@ -678,7 +679,6 @@ program testPr_hdlc(
 	    else if(Drop)
 	        VerifyDropReceive(ReceiveData, Size);
 	    else if(FCSerr)
-            $display("HERE");
 	        VerifyFCSErrReceive(ReceiveData, Size);
 	    else if(NonByteAligned)
 	        VerifyNonByteAlignedReceive(ReceiveData, Size);
