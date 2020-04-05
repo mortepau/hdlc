@@ -47,7 +47,7 @@ program testPr_hdlc(
         // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
         assert (ReadData == RXSC_READY) begin
-            $display("PASS: VerifyNormalReceive:: Data ready");
+            $display("PASS: VerifyNormalReceive:: Rx_SC correct");
         end else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyNormalReceive:: Expected Rx_SC = 0x01, Received Rx_SC = 0x%h", ReadData);
@@ -56,10 +56,10 @@ program testPr_hdlc(
 	    // Assert data length is correct
 	    ReadAddress(RXLEN, DataLen);
         assert (DataLen == Size) begin
-            $display("PASS: VerifyNormalReceive:: Data length as expected");
+            $display("PASS: VerifyNormalReceive:: Rx_Len correct");
         end else begin
             TbErrorCnt++;
-            $error("FAIL: VerifyNormalReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
+            $error("FAIL: VerifyNormalReceive:: Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
         end
 
         // Check content
@@ -67,7 +67,7 @@ program testPr_hdlc(
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
 	            TbErrorCnt++;
-	            $error("FAIL: VerifyNormalReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	            $error("FAIL: VerifyNormalReceive:: Expected Rx_Buff = 0x%h, Received Rx_Buff = 0x%h", data[i], ReadData);
 	        end
 	    end
 	endtask
@@ -86,7 +86,7 @@ program testPr_hdlc(
         // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == (RXSC_OVERFLOW | RXSC_READY)) 
-            $display("PASS: VerifyOverflowReceive:: Data ready");
+            $display("PASS: VerifyOverflowReceive:: Rx_SC correct");
 	    else begin
 	        TbErrorCnt++;
 	        $error("FAIL: VerifyOverflowReceive:: Expected Rx_SC = 0x11, Received Rx_SC = 0x%h", ReadData);
@@ -95,10 +95,10 @@ program testPr_hdlc(
 	    // Assert data length is correct 
 	    ReadAddress(RXLEN, DataLen);
         assert (DataLen == Size) begin
-            $display("PASS: VerifyOverflowReceive:: Data length as expected");
+            $display("PASS: VerifyOverflowReceive:: Rx_Len correct");
         end else begin
             TbErrorCnt++;
-            $error("FAIL: VerifyOverflowReceive:: Data length not as expected, Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
+            $error("FAIL: VerifyOverflowReceive:: Expected Rx_Len = %0d, Received Rx_Len = %0d", Size, DataLen);
         end
 
         // Check content
@@ -106,7 +106,7 @@ program testPr_hdlc(
 	        ReadAddress(RXBUFF, ReadData);
 	        assert(ReadData == data[i]) else begin
 	            TbErrorCnt++;
-	            $error("FAIL: VerifyOverflowReceive:: Expected ReadData[%0d] = 0x%h, Received ReadData[%0d] = 0x%h", i, data[i], i, ReadData);
+	            $error("FAIL: VerifyOverflowReceive:: Expected Rx_Buff = 0x%h, Received Rx_Buff = 0x%h", data[i], ReadData);
 	        end
 	    end
 
@@ -114,10 +114,10 @@ program testPr_hdlc(
         for (int i = 0; i < 3; i++) begin
             ReadAddress(RXBUFF, ReadData);
             assert(ReadData == 8'b0) 
-                $display("PASS: VerifyOverflowReceive:: OverflowData = 0x00");
+                $display("PASS: VerifyOverflowReceive:: Rx_Buff correct");
             else begin
                 TbErrorCnt++;
-                $error("FAIL: VerifyOverflowReceive:: Expected ReadData = 0x00, Received ReadData = 0x%h", ReadData);
+                $error("FAIL: VerifyOverflowReceive:: Expected Rx_Buff = 0x00, Received Rx_Buff = 0x%h", ReadData);
             end
         end
     endtask
@@ -132,19 +132,19 @@ program testPr_hdlc(
         // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_ABORTSIGNAL)
-            $display("PASS: VerifyAbortReceive:: Abort received");
+            $display("PASS: VerifyAbortReceive:: Rx_SC correct");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyAbortReceive:: Abort not received, Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyAbortReceive:: Expected Rx_SC = 0x08, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that data is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyAbortReceive:: Rx_Buff correct");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyAbortReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyAbortReceive:: Expected Rx_Buff = 0x00, Received Rx_Buff = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -161,10 +161,10 @@ program testPr_hdlc(
 	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyDropReceive:: Rx_Buff correct", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyDropReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyDropReceive:: Expected Rx_Buff = 0x00, Received Rx_Buff = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -178,19 +178,19 @@ program testPr_hdlc(
         // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_FRAMEERROR)
-            $display("PASS: VerifyNonByteAlignedReceive:: FrameError asserted");
+            $display("PASS: VerifyNonByteAlignedReceive:: Rx_SX correct");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyNonByteAlignedReceive:: FrameError not asserted, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyNonByteAlignedReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyNonByteAlignedReceive:: Rx_Buff correct", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyNonByteAlignedReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyNonByteAlignedReceive:: Expected Rx_Buff = 0x00, Received Rx_Buff = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -204,19 +204,19 @@ program testPr_hdlc(
 	    // Only check RO bits
 	    ReadData = ReadData & RXSC_READ_MASK;
 	    assert (ReadData == RXSC_FRAMEERROR)
-            $display("PASS: VerifyFCSErrReceive:: FrameError received");
+            $display("PASS: VerifyFCSErrReceive:: Rx_SC correct");
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFCSErrReceive:: FrameError not received, Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
+	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
 	    end
 
 	    // Assert that Rx_Buff is invalid
 	    ReadAddress(RXBUFF, ReadData);
 	    assert (ReadData == 8'b0)
-            $display("PASS: VerifyFCSErrReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+            $display("PASS: VerifyFCSErrReceive:: Rx_Buff correct", ReadData);
 	    else begin
 	        TbErrorCnt++;
-	        $error("FAIL: VerifyFCSErrReceive:: Expected ReadData = 0x00 Received ReadData = 0x%h", ReadData);
+	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_Buff = 0x00 Received Rx_Buff = 0x%h", ReadData);
 	    end
 	endtask
 
@@ -237,7 +237,7 @@ program testPr_hdlc(
                 @(posedge uin_hdlc.Clk);
             end
             assert(uin_hdlc.Tx == flag[f]) else begin
-                $error("FAIL: Flag bit %1d is wrong", f);
+                $error("FAIL: VerifyNonAbortTransmit:: Expected Tx_flag = 0b%b, Received Tx_flag = 0b%b", flag[f], uin_hdlc.Tx);
                 TbErrorCnt++;
             end
         end
@@ -246,7 +246,7 @@ program testPr_hdlc(
         for (int i = 0; i < Size; i++) begin
             @(posedge uin_hdlc.Clk);
                 assert (fData[i] == uin_hdlc.Tx) else begin
-                    $error("FAIL: Tx is not equal expected output");
+                    $error("FAIL. VerifyNonAbortTransmit:: Expected Tx = 0b%b, Received Tx = 0b%b", fData[i], uin_hdlc.Tx);
                     TbErrorCnt++;
                 end
         end
@@ -261,9 +261,9 @@ program testPr_hdlc(
             end
         end
         assert(FCSBytes == FCSBytes_calc) begin
-            $display("PASS: FCSBytes are correct");    
+            $display("PASS: VerifyNonAbortTransmit:: FCSBytes correct");    
         end else begin
-            $error("FAIL: FCSBytes not correct, 0x%4h != 0x%5h", FCSBytes, FCSBytes_calc);
+            $error("FAIL: VerifyNonAbortTransmit:: Expected FCSBytes = 0x%5h, Received FCSBytes = 0x%5h", FCSBytes_calc, FCSBytes);
             TbErrorCnt++;
         end
 
@@ -271,7 +271,7 @@ program testPr_hdlc(
         for (int f = 0; f < 8; f++) begin
             @(posedge uin_hdlc.Clk);
                 assert(uin_hdlc.Tx == flag[f]) else begin
-                    $error("FAIL: Flag bit %1d is wrong", f);
+                    $error("FAIL: VerifyNonAbortTransmit:: Expected Tx_flag = 0b%b, Received Tx_flag = 0b%b", flag[f], uin_hdlc.Tx);
                     TbErrorCnt++;
                 end
         end
@@ -295,7 +295,7 @@ program testPr_hdlc(
                 @(posedge uin_hdlc.Clk);
             end
             assert(uin_hdlc.Tx == flag[f]) else begin
-                $error("FAIL: Flag bit %1d is wrong", f);
+                $error("FAIL: VerifyAbortTransmit:: Expected Tx_flag = 0b%b, Received Tx_flag = 0b%b", flag[f], uin_hdlc.Tx);
                 TbErrorCnt++;
             end
         end
@@ -304,7 +304,7 @@ program testPr_hdlc(
         for (int i = 0; i < Size / 2; i++) begin
             @(posedge uin_hdlc.Clk);
                 assert (fData[i] == uin_hdlc.Tx) else begin
-                    $error("FAIL: Tx is not equal expected output");
+                    $error("FAIL: VerifyAbortTransmit:: Expected Tx = 0b%b, Received Tx = 0b%b", fData[i], uin_hdlc.Tx);
                     TbErrorCnt++;
                 end
         end
@@ -321,9 +321,9 @@ program testPr_hdlc(
 	    // Only check RO bits 
         ReadData = ReadData & TXSC_READ_MASK;
         assert (ReadData == (TXSC_ABORTEDTRANS | TXSC_DONE)) begin
-            $display("PASS: Tx_AbortedTrans asserted");
+            $display("PASS: VerifyAbortTransmit:: Tx_SC correct");
         end else begin
-            $error("FAIL: Tx_AbortedTrans was not asserted");
+            $error("FAIL: VerifyAbortTransmit:: Expected Tx_SC = 0x09, Received Tx_SC = 0x%h", ReadData);
             TbErrorCnt++;
         end
 
@@ -335,7 +335,7 @@ program testPr_hdlc(
         repeat(10) begin
             @(posedge uin_hdlc.Clk);
                 assert (uin_hdlc.Tx == 1'b1) else begin
-                    $error("FAIL: Tx != 1'b1 after abort");
+                    $error("FAIL: VerifyAbortTransmit:: Expected Tx = 0b1");
                     TbErrorCnt++;
                 end
         end
