@@ -192,7 +192,7 @@ program testPr_hdlc(
             $display("PASS: VerifyFCSErrReceive:: Data size correct");
         end else begin
             TbErrorCnt++;
-            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect. Expected Rx_Len = 0b%b, Received Rx_Len = 0b%b", Size, DataLen);
+            $error("FAIL: VerifyFCSErrReceive:: Data size incorrect. Expected Rx_Len = %d, Received Rx_Len = %d", Size, DataLen);
         end
 
 	    // Assert that only Rx_FrameError is set
