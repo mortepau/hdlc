@@ -181,15 +181,6 @@ program testPr_hdlc(
 	task VerifyFCSErrReceive(logic [127:0][7:0] data, int Size);
 	    logic [7:0] ReadData, DataLen;
 
-	    // Assert that only Rx_Ready is set
-	    ReadAddress(RXSC, ReadData);
-	    ReadData = ReadData & RXSC_READ_MASK;
-	    assert (ReadData == RXSC_READY) $display("PASS: VerifyFCSErrReceive:: FrameError asserted");
-	    else begin
-	        TbErrorCnt++;
-	        $error("FAIL: VerifyFCSErrReceive:: Expected Rx_SC = 0x04, Received Rx_SC = 0x%h", ReadData);
-	    end
-
 	    // Assert that only Rx_FrameError is set
 	    ReadAddress(RXSC, ReadData);
 	    // Mask the Write-Only bits
