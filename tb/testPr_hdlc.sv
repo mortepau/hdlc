@@ -629,6 +629,9 @@ program testPr_hdlc(
             FCSBytes[15:8] = FCSBytes[15:8] ^ 8'b11111111;
         end
 
+        ReceiveData[Size] = FCSBytes[7:0];
+        ReceiveData[Size+1] = FCSBytes[15:8];
+
 	    //Enable FCS
 	    if(!Overflow && !NonByteAligned) 
 	        WriteAddress(RXSC, 8'h20);
@@ -638,7 +641,7 @@ program testPr_hdlc(
 	    //Generate stimulus
 	    InsertFlagOrAbort(1);
 	  
-	    MakeRxStimulus(ReceiveData, Size);
+	    MakeRxStimulus(ReceiveData, Size + 2);
 	  
 	    if(Overflow) begin
 	        OverflowData[0] = 8'h44;
@@ -659,7 +662,6 @@ program testPr_hdlc(
 	    if(Abort) begin
 	        InsertFlagOrAbort(0);
 	    end else begin
-            MakeRxStimulus(FCSBytes, 2);
 	        InsertFlagOrAbort(1);
 	    end
 
