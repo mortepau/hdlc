@@ -371,7 +371,7 @@ program testPr_hdlc(
 	    Receive(     126,     0,      0,              0,        1,    0,        0); // Overflow
 	    Receive(      25,     0,      0,              0,        0,    0,        0); // Normal
 	    Receive(      47,     0,      0,              0,        0,    0,        0); // Normal
-	    //Receive(      58,     0,      1,              0,        0,    0,        0); // FCSerr
+	    Receive(      58,     0,      1,              0,        0,    0,        0); // FCSerr
 	    Receive(      90,     0,      0,              1,        0,    0,        0); // NonByteAligned
 	    Receive(      74,     0,      0,              0,        0,    1,        0); // Drop
 	    Receive(     101,     0,      0,              0,        0,    0,        1); // SkipRead
