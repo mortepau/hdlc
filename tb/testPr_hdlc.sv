@@ -376,23 +376,30 @@ program testPr_hdlc(
 	    Init();
 
 	    // Receive: Size, Abort, FCSerr, NonByteAligned, Overflow, Drop, SkipRead
-	    Receive( 10, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive( 40, 1, 0, 0, 0, 0, 0); // Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    Receive( 45, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive(126, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive(122, 1, 0, 0, 0, 0, 0); // Abort
-	    Receive(126, 0, 0, 0, 1, 0, 0); // Overflow
-	    Receive( 25, 0, 0, 0, 0, 0, 0); // Normal
-	    Receive( 47, 0, 0, 0, 0, 0, 0); // Normal
+	    Receive(      10,     0,      0,              0,        0,    0,        0); // Normal
+	    Receive(      40,     1,      0,              0,        0,    0,        0); // Abort
+	    Receive(     126,     0,      0,              0,        1,    0,        0); // Overflow
+	    Receive(      45,     0,      0,              0,        0,    0,        0); // Normal
+	    Receive(     126,     0,      0,              0,        0,    0,        0); // Normal
+	    Receive(     122,     1,      0,              0,        0,    0,        0); // Abort
+	    Receive(     126,     0,      0,              0,        1,    0,        0); // Overflow
+	    Receive(      25,     0,      0,              0,        0,    0,        0); // Normal
+	    Receive(      47,     0,      0,              0,        0,    0,        0); // Normal
+	    Receive(      47,     0,      1,              0,        0,    0,        0); // FCSerr
+	    Receive(      47,     0,      0,              1,        0,    0,        0); // NonByteAligned
+	    Receive(      47,     0,      0,              0,        0,    1,        0); // Drop
+	    Receive(      47,     0,      0,              0,        0,    0,        1); // SkipRead
 
         //Transmit: Size, Abort, Overflow
-        Transmit( 10, 0, 0); // Normal
-        Transmit(122, 1, 0); // Abort
-        Transmit( 40, 0, 0); // Normal
-        Transmit(126, 0, 0); // Normal
-        Transmit(126, 0, 1); // Overflow
-        Transmit(122, 0, 0); // Normal
+        Transmit(     10,     0,        0); // Normal
+        Transmit(    122,     1,        0); // Abort
+        Transmit(    126,     0,        1); // Overflow
+        Transmit(     40,     0,        0); // Normal
+        Transmit(    126,     0,        0); // Normal
+        Transmit(     40,     1,        0); // Abort
+        Transmit(    126,     0,        1); // Overflow
+        Transmit(    122,     0,        0); // Normal
+        Transmit(     47,     0,        0); // Normal
 
 	    $display("*************************************************************");
 	    $display("%t - Finishing Test Program", $time);
