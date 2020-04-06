@@ -398,63 +398,6 @@ program testPr_hdlc(
 	    $display("*********************************");
 	end
 
-	// Covergroup
-    covergroup hdlc_cg() @(posedge uin_hdlc.Clk);
-	    Address: coverpoint uin_hdlc.Address {
-	        bins Address[] = {[0:7]};
-	    }
-	    DataIn: coverpoint uin_hdlc.DataIn {
-	        bins DataIn[] = {[0:255]};
-	    }
-	    DataOut: coverpoint uin_hdlc.DataOut {
-	        bins DataOut[] = {[0:255]};
-	    }
-	    RxData: coverpoint uin_hdlc.Rx_Data {
-	        bins RxData[] = {[0:255]};
-	    }
-	    RxFrameSize: coverpoint uin_hdlc.Rx_FrameSize {
-	        bins RxFrameSize[] = {[0:255]};
-	    }
-	    RxDataBuffOut: coverpoint uin_hdlc.Rx_DataBuffOut {
-	        bins RxDataBuffOut[] = {[0:255]};
-	    }
-	    RxValidFrame: coverpoint uin_hdlc.Rx_ValidFrame {
-	        bins InvalidFrame = { 0 };
-	        bins ValidFrame = { 1 };
-	    }
-	    RxAbortSignal: coverpoint uin_hdlc.Rx_AbortSignal {
-	        bins Keep = { 0 };
-	        bins Abort = { 1 };
-	    }
-	    RxReady: coverpoint uin_hdlc.Rx_Ready {
-	        bins NotReady = { 0 };
-	        bins Ready = { 1 };
-	    }
-	    RxEoF: coverpoint uin_hdlc.Rx_EoF {
-	        bins NotEoF = { 0 };
-	        bins EoF = { 1 };
-	    }
-	    RxOverflow: coverpoint uin_hdlc.Rx_Overflow {
-	        bins NoOverflow = { 0 };
-	        bins Overflow = { 1 };
-	    }
-	    RxFCSErr: coverpoint uin_hdlc.Rx_FCSerr {
-	        bins NoError = { 0 };
-	        bins Error = { 1 };
-	    }
-	    RxFrameError: coverpoint uin_hdlc.Rx_FrameError {
-	        bins NoFrameError = { 0 };
-	        bins FrameError = { 1 };
-	    }
-	    RxDrop: coverpoint uin_hdlc.Rx_Drop {
-	        bins Keep = { 0 };
-	        bins Drop = { 1 };
-	    }
-	endgroup
-
-	// Instantiate the covergroup
-	hdlc_cg inst_hdlc_cg = new();
-
 	task Init();
 	    uin_hdlc.Clk         =   1'b0;
 	    uin_hdlc.Rst         =   1'b0;
