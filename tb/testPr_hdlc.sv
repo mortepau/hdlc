@@ -399,7 +399,7 @@ program testPr_hdlc(
 	end
 
 	// Covergroup
-    covergroup hdlc_cg(input in_hdlc uin_hdlc) @(posedge uin_hdlc.Clk);
+    covergroup hdlc_cg() @(posedge uin_hdlc.Clk);
 	    Address: coverpoint uin_hdlc.Address {
 	        bins Address[] = {[0:7]};
 	    }
