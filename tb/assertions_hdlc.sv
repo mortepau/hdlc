@@ -125,7 +125,7 @@ module assertions_hdlc (
 		    if (Rx_FrameError)
 			    !Rx_Ready && !Rx_Overflow && !Rx_AbortSignal &&  Rx_FrameError
 		    else if (Rx_AbortSignal && Rx_Overflow)
-			     Rx_Ready &&  Rx_Overflow &&  Rx_AbortSignal &&  Rx_FrameError
+			     Rx_Ready &&  Rx_Overflow &&  Rx_AbortSignal & !Rx_FrameError
 		    else if (Rx_AbortSignal)
 			     Rx_Ready && !Rx_Overflow &&  Rx_AbortSignal && !Rx_FrameError
 		    else if (Rx_Overflow)
