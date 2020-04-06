@@ -1,5 +1,5 @@
-# vsim -assertdebug -msgmode both -c -voptargs="+acc" test_hdlc bind_hdlc -do "log -r *; run -all; exit" 
-# Start time: 21:13:35 on Apr 05,2020
+# vsim -assertdebug -msgmode both -c -coverage -voptargs="+acc" test_hdlc bind_hdlc -do "log -r *; run -all; coverage report -cvg -details -file coverage_rep.txt; exit" 
+# Start time: 16:27:32 on Apr 06,2020
 # ** Note: (vsim-3812) Design is being optimized...
 # ** Note: (vopt-143) Recognized 1 FSM in module "TxFCS(fast)".
 # ** Note: (vopt-143) Recognized 1 FSM in module "RxBuff(fast)".
@@ -36,6 +36,7 @@
 # Loading work.testPr_hdlc(fast)
 # Loading work.assertions_hdlc(fast)
 # Loading work.bind_hdlc(fast)
+# ** Warning: (vsim-8634) Code was not compiled with coverage options.
 # log -r *
 #  run -all
 # *************************************************************
@@ -966,11 +967,12 @@
 #    Time: 12248250 ns  Iteration: 2  Instance: /test_hdlc/u_testPr
 # Break in Module testPr_hdlc at ./testPr_hdlc.sv line 390
 # Stopped at ./testPr_hdlc.sv line 390
+#  coverage report -cvg -details -file coverage_rep.txt
 #  exit
 # *********************************
 # *                               *
 # * 	Assertion Errors: 0	  *
 # *                               *
 # *********************************
-# End time: 21:13:39 on Apr 05,2020, Elapsed time: 0:00:04
-# Errors: 0, Warnings: 0
+# End time: 16:27:37 on Apr 06,2020, Elapsed time: 0:00:05
+# Errors: 0, Warnings: 1
