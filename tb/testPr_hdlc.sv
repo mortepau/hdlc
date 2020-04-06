@@ -401,7 +401,12 @@ program testPr_hdlc(
 	// Covergroup
     covergroup hdlc_cg() @(posedge uin_hdlc.Clk);
 	    Address: coverpoint uin_hdlc.Address {
-	        bins Address[] = {[0:7]};
+            bins Tx_SC = {0};
+            bins Tx_Buff = {1};
+            bins Rx_SC = {2};
+            bins Rx_Buff = {3};
+            bins Rx_Len = {4};
+            ignore_bins Invalid = {[5:7]};
 	    }
 	    DataIn: coverpoint uin_hdlc.DataIn {
 	        bins DataIn[] = {[0:255]};
@@ -413,10 +418,8 @@ program testPr_hdlc(
 	        bins RxData[] = {[0:255]};
 	    }
 	    RxFrameSize: coverpoint uin_hdlc.Rx_FrameSize {
-	        bins RxFrameSize[] = {[0:255]};
-	    }
-	    RxDataBuffOut: coverpoint uin_hdlc.Rx_DataBuffOut {
-	        bins RxDataBuffOut[] = {[0:255]};
+	        bins RxFrameSize[] = {[0:126]};
+            ignore_bins Invalid = {[127:255]};
 	    }
 	    RxValidFrame: coverpoint uin_hdlc.Rx_ValidFrame {
 	        bins InvalidFrame = { 0 };
@@ -450,6 +453,33 @@ program testPr_hdlc(
 	        bins Keep = { 0 };
 	        bins Drop = { 1 };
 	    }
+        TxValidFrame: coverpoint uin_hdlc.Tx_ValidFrame {
+            bins InvalidFrame = { 0 };
+            bins ValidFrame = { 1 };
+        }
+        TxAbortedTrans: coverpoint uin_hdlc.Tx_AbortedTrans {
+            bins Kept = { 0 };
+            bins Aborted = { 1 };
+        }
+        TxData: coverpoint uin_hdlc.Tx_Data {
+            bins TxData[] = {[0:255]};
+        }
+        TxFull: coverpoint uin_hdlc.Tx_Full {
+            bins NotFull = { 0 };
+            bins Full = { 1 };
+        }
+        TxFrameSize: coverpoint uin_hdlc.Tx_FrameSize {
+            bins TxFrameSize[] = {[0:126]};
+            ignore_bins Invalid = {[127:255]};
+        }
+        TxEnable: coverpoint uin_hdlc.Tx_Enable {
+            bins Disabled = { 0 };
+            bins Enabled = { 1 };
+        }
+        TxAbortFrame: coverpoint uin_hdlc.Tx_AbortFrame {
+            bins Keep = { 0 };
+            bins Abort = { 1 };
+        }
 	endgroup
 
 	// Instantiate the covergroup
